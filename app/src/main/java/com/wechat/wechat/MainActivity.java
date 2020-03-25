@@ -20,7 +20,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton buttonContacts;
-
     RecyclerView chat_list_recyclerview;
     LinearLayoutManager linearLayoutManager;
 
