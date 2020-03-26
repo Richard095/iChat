@@ -7,29 +7,18 @@ public class Contact {
     private String userId;
     private int imageId;
     private String status;
-    public Contact(String username, String fullname, String email, String userId, int imageId, String status) {
+    private String conversationId;
+
+    public Contact(){}
+
+    public Contact(String username, String fullname, String email, String userId, int imageId, String status, String conversationId) {
         this.username = username;
         this.fullname = fullname;
         this.email = email;
         this.userId = userId;
         this.imageId = imageId;
         this.status = status;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getImageId() {
-        return imageId;
-    }
-
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+        this.conversationId = conversationId;
     }
 
     public String getUsername() {
@@ -62,5 +51,29 @@ public class Contact {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(String conversationId) {
+        this.conversationId = conversationId;
     }
 }

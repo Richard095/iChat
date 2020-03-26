@@ -19,6 +19,22 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     private Context context;
     ArrayList<Contact> contactsList;
+
+
+    private OnContactClickListener onContactClickListener;
+
+    public  interface OnContactClickListener{
+        void onContactListener(Contact contact);
+    }
+
+    public void setOnContactClickListener(OnContactClickListener onContactClickListener){
+        this.onContactClickListener = onContactClickListener;
+    }
+
+
+
+
+
     public ContactsAdapter(Context context, ArrayList<Contact> contactsList) {
         this.context = context;
         this.contactsList = contactsList;
@@ -38,6 +54,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         viewHolder.imageprofile.setImageDrawable(ContextCompat.getDrawable(context, contact.getImageId()));
         viewHolder.fullname.setText(contact.getFullname());
         viewHolder.status.setText(contact.getStatus());
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onContactClickListener.onContactListener(contact);
+            }
+        });
+
+
     }
 
     @Override

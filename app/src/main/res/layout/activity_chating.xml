@@ -18,7 +18,7 @@
         android:elevation="4dp"
         app:titleTextColor="#fff">
         <TextView
-            android:id="@+id/toolbar_title"
+            android:id="@+id/toolbar_title_chating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
@@ -55,6 +55,7 @@
             android:layout_margin="5dp"
             android:paddingLeft="10dp"/>
        <android.support.design.widget.FloatingActionButton
+           android:id="@+id/send_message_button_id"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:src="@drawable/ic_send_black_24dp"

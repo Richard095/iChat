@@ -6,6 +6,7 @@ public class Conversation {
     private String urlImage;
     private String conversationId;
 
+    public Conversation(){}
     public Conversation(String message, String created_At, String urlImage, String conversationId) {
         this.message = message;
         this.created_At = created_At;

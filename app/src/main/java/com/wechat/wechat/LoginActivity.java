@@ -21,6 +21,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
@@ -37,6 +39,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int RC_SIGN_IN = 1001;
     private static final String TAG = "LoginActivity";
     private static final String LOGIN_METHOD_GOOGLE = "GOOGLE";
+    private static final String LOGIN_METHOD_FACEBOOK = "FACEBOOK";
+    private static final String LOGIN_METHOD_CUSTUM_SIGNIN = "CUSTUM_SIGNIN";
+
 
 
     EditText username, password;
@@ -47,8 +52,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private DatabaseReference databaseReference;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +59,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         username = findViewById(R.id.username);
         password = findViewById(R.id.pass);
         loginButton = findViewById(R.id.sign_in_button);
+
+
         googleSignConfig();
         startFirebaseConf();
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,9 +76,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
         String token  = pref.getString("token", null); // getting String
 
-        Toast.makeText(this, "Your token: " + token, Toast.LENGTH_SHORT).show();
-
-        System.out.println("====================>Your token: "+token );
 
         if(token != null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -88,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         databaseReference = firebaseDatabase.getReference();
     }
 
-    //Here start google Autentication
+    //Here start google Authentication
     public void googleSignConfig(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -106,6 +109,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         System.out.println(connectionResult);
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -124,7 +129,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private  void handleSingInResult(GoogleSignInAccount account){
-        Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -132,21 +136,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Log.d(TAG, "signInWithCredential:success: currentUser: "
-                                    + user.getEmail()
-                                    +" "+ user.getDisplayName()
-                                    +" " +user.getPhoneNumber()
-                                    +" " +user.getPhotoUrl()
-                                    +" " +user.getUid()
-                            );
-
                             saveUser(LOGIN_METHOD_GOOGLE, user.getDisplayName(), user.getEmail(),user.getUid(),user.getPhotoUrl().toString(), user.getDisplayName(),"NO_NECESARY");
-
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                             Toast.makeText(LoginActivity.this, "Firebase Authentication Succeeded ", Toast.LENGTH_LONG).show();
-
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Firebase Authentication failed:"  + task.getException(), Toast.LENGTH_SHORT).show();
@@ -157,17 +151,25 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
     public  void saveUser(String loginMethod, String username, String email, String userId, String urlProfile, String fullname, String password){
-
         if (loginMethod.equals("GOOGLE")){
-            User user = new User(username,email, userId, urlProfile, fullname, password);
-            databaseReference.child("User").child(user.getUserId()).setValue(user);
-            Toast.makeText(this, "Usuario registrado con exito!!", Toast.LENGTH_SHORT).show();
-
-
-            SharedPreferences preferences = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("token", user.getUserId()); // Storing string
-            editor.commit();
+            final User user = new User(username,email, userId, urlProfile, fullname, password);
+            databaseReference.child("User").child(user.getUserId()).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            SharedPreferences preferences = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("token", user.getUserId());
+                            editor.apply();
+                            Toast.makeText(LoginActivity.this, R.string.login_succes, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(LoginActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 
