@@ -24,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
+import com.wechat.wechat.models.Name;
+import com.wechat.wechat.models.User;
 
 import java.util.ArrayList;
 
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     ArrayList<Chat> chatList = new  ArrayList<>();
     String myUserId;
+
+    private  String nameContact="", usernameId="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,71 +106,43 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void fetchMyConversations() {
+        if (myUserId != null) {
+            databaseReference.child("User").child(myUserId).child("Conversations").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    chatList.clear();
+                    for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                        Chats chats = objDataSnapshot.getValue(Chats.class);
 
-    public void getConversations(){
-        databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                chatList.clear();
+                        if (chats != null) {
+                            if (myUserId.equals(chats.getUserIdDOS())) {
+                                usernameId = chats.getUserIdUno();
+                                nameContact = chats.getUserNameUno();
 
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
-                    final Chat chat = objDataSnapshot.getValue(Chat.class);
-                    if (chat != null ){
-                        if (chat.getFirstUserId().equals(myUserId)){
-                            chatList.add(chat);
-                            chatListRecycler. setAdapter(chatAdapter);
+                            } else if (myUserId.equals(chats.getUserIdUno())) {
+                                usernameId = chats.getUserIdDOS();
+                                nameContact = chats.getGetUserNameDos();
+                            }
+                            chatList.add(new Chat(
+                                    nameContact,
+                                    "Preview de mensaje provicional...",
+                                    usernameId,
+                                    0,
+                                    chats.getUserIdUno(),
+                                    chats.getUserIdDOS(),
+                                    chats.getConversationId()));
                         }
                     }
+                    chatListRecycler.setAdapter(chatAdapter);
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
 
-    public void fetchMyConversations(){
-        databaseReference.child("User").child(myUserId).child("Conversations").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                chatList.clear();
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
-                    final Chats chats = objDataSnapshot.getValue(Chats.class);
-                    if (chats != null ){
-                        chatList.add(new Chat("USERNAME_PROVICIONAEL", chats.getConversationId(),"",0,"","",chats.getConversationId()));
-                        chatListRecycler.setAdapter(chatAdapter);
-                    }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }
     }
-
-    public void checkConversationId(Chats chats){
-
-
-        databaseReference.child("Conversations").child(chats.getConversationId()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
-                    Chat chat = objDataSnapshot.getValue(Chat.class);
-                    //Log.d("CHAT", chat.getFirstUserId() );
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-
-
 }

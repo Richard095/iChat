@@ -1,6 +1,7 @@
 package com.wechat.wechat.models;
 
 public class Chat {
+
     private String username;
     private String message;
     private String created_At;
@@ -8,6 +9,7 @@ public class Chat {
     private String firstUserId;
     private String secondUserId;
     private String conversationId;
+
 
     public Chat(){}
     public Chat(String username, String message, String created_At, int profile, String firstUserId, String secondUserId, String conversationId) {

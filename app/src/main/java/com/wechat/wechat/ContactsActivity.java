@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toast;
+
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -27,22 +27,22 @@ import java.util.ArrayList;
 
 public class ContactsActivity extends AppCompatActivity {
 
-    RecyclerView contact_list_recyclerview;
+    RecyclerView contactListRecyclerview;
     LinearLayoutManager linearLayoutManager;
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private ContactsAdapter contactsAdapter;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    ContactsAdapter contactsAdapter;
 
-    private ArrayList<Contact> contactsList = new  ArrayList<>();
+    ArrayList<Contact> contactsList = new  ArrayList<>();
     String  myUserId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-        contact_list_recyclerview = findViewById(R.id.contact_list_recyclerview);
+        contactListRecyclerview = findViewById(R.id.contact_list_recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
-        contact_list_recyclerview.setLayoutManager(linearLayoutManager);
+        contactListRecyclerview.setLayoutManager(linearLayoutManager);
         contactsAdapter = new ContactsAdapter(ContactsActivity.this,contactsList);
 
         Toolbar toolbar = findViewById(R.id.main_activity_contacts_toolbar);
@@ -102,13 +102,14 @@ public class ContactsActivity extends AppCompatActivity {
                 contactsList.clear();
 
                 for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+
                     User user = objDataSnapshot.getValue(User.class);
                     if (user != null) {
                         if (myUserId != null) {
                             if (!myUserId.equals(user.getUserId())) {
-                                IfExistConversationOnContact(user.getUserId());
+                                CheckIfExistConversationOnContact(user.getUserId());
                                 contactsList.add(new Contact(user.getUsername(), user.getUsername(), user.getEmail(), user.getUserId(), R.drawable.profile, "Online!!", ""));
-                                contact_list_recyclerview.setAdapter(contactsAdapter);
+                                contactListRecyclerview.setAdapter(contactsAdapter);
                             }
                         }
                     }
@@ -123,9 +124,9 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
 
-    public void StartChatWithContact(String userId, String userName, String conversationId){
+    public void StartChatWithContact(String contactUserId, String userName, String conversationId){
         Intent chatIntent = new Intent(ContactsActivity.this, ChatingActivity.class);
-        chatIntent.putExtra("userId", userId);
+        chatIntent.putExtra("userId", contactUserId);
         chatIntent.putExtra("username", userName);
         chatIntent.putExtra("conversationId", conversationId);
         startActivity(chatIntent);
@@ -133,7 +134,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
 
-    public void IfExistConversationOnContact(final String secondUserId){
+    public void CheckIfExistConversationOnContact(final String secondUserId){
         databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -24,6 +24,7 @@ import com.wechat.wechat.adapters.ConversationAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
 import com.wechat.wechat.models.Conversation;
+import com.wechat.wechat.models.User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -123,7 +124,7 @@ public class ChatingActivity extends AppCompatActivity {
             String uniqueID = UUID.randomUUID().toString();
             conversationId = uniqueID;
             saveConversation(contactUsername,"Mensaje provicinal :(", createdAt,myUserId, contactUserId, uniqueID );
-
+            getMessages();
         }else{
             sendMessage(conversationId);
         }
@@ -144,12 +145,46 @@ public class ChatingActivity extends AppCompatActivity {
     }
 
 
-    public void saveMyContactsWithChatActive(String conversationId){
+    public void saveMyContactsWithChatActive(final String conversationId){
 
-        Chats chats = new Chats("Mensaje provicional","Timepstamp provicional","",conversationId);
 
-        databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).setValue(chats);
-        databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).setValue(chats);
+            databaseReference.child("User").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                        User user = objDataSnapshot.getValue(User.class);
+                        if (user != null) {
+                            if (myUserId != null){
+                                if (myUserId.equals(user.getUserId())){
+                                    Chats chats = new Chats(
+                                            "Mensaje provicional",
+                                            "Timepstamp provicional",
+                                            "",
+                                            conversationId,
+                                            myUserId,
+                                            contactUserId,
+                                            user.getFullname(),
+                                            contactUsername);
+
+                                    databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).setValue(chats);
+                                    databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).setValue(chats);
+
+
+                                }
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
 
     }
 
@@ -164,8 +199,6 @@ public class ChatingActivity extends AppCompatActivity {
         databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
     }
 
-
-
     public void getMessages(){
         databaseReference.child("Conversations").child(conversationId).child("Messages").addValueEventListener(new ValueEventListener() {
             @Override
@@ -174,8 +207,8 @@ public class ChatingActivity extends AppCompatActivity {
                 for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
                     Conversation conversation = objDataSnapshot.getValue(Conversation.class);
                     conversationList.add(conversation);
-                    messagesRecyclerview.setAdapter(conversationAdapter);
                 }
+                messagesRecyclerview.setAdapter(conversationAdapter);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -183,6 +216,7 @@ public class ChatingActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 
