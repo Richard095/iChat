@@ -5,18 +5,18 @@ public class Contact {
     private String fullname;
     private String email;
     private String userId;
-    private int imageId;
+    private String profileUrl;
     private String status;
     private String conversationId;
 
     public Contact(){}
 
-    public Contact(String username, String fullname, String email, String userId, int imageId, String status, String conversationId) {
+    public Contact(String username, String fullname, String email, String userId, String profileUrl, String status, String conversationId) {
         this.username = username;
         this.fullname = fullname;
         this.email = email;
         this.userId = userId;
-        this.imageId = imageId;
+        this.profileUrl = profileUrl;
         this.status = status;
         this.conversationId = conversationId;
     }
@@ -53,12 +53,12 @@ public class Contact {
         this.userId = userId;
     }
 
-    public int getImageId() {
-        return imageId;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
     public String getStatus() {

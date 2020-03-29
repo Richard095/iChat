@@ -9,11 +9,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
-import com.wechat.wechat.models.Name;
-import com.wechat.wechat.models.User;
+
 
 import java.util.ArrayList;
 
@@ -42,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Chat> chatList = new  ArrayList<>();
     String myUserId;
 
-    private  String nameContact="", usernameId="";
+    private  String nameContact="", usernameId="", urlProfile="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         myUserId  = pref.getString("token", null);
 
-
         startFirebaseConfiguration();
-        //getConversations();
         fetchMyConversations();
+
+        
         chatAdapter.setOnChatClickListener(new ChatAdapter.OnChatClickListener() {
             @Override
             public void onChatListener(Chat chat) {
@@ -119,19 +116,17 @@ public class MainActivity extends AppCompatActivity {
                             if (myUserId.equals(chats.getUserIdDOS())) {
                                 usernameId = chats.getUserIdUno();
                                 nameContact = chats.getUserNameUno();
+                                urlProfile = chats.getProfileUrlUno();
 
                             } else if (myUserId.equals(chats.getUserIdUno())) {
                                 usernameId = chats.getUserIdDOS();
                                 nameContact = chats.getGetUserNameDos();
+                                urlProfile = chats.getProfileUrlDos();
                             }
-                            chatList.add(new Chat(
-                                    nameContact,
-                                    "Preview de mensaje provicional...",
-                                    usernameId,
-                                    0,
-                                    chats.getUserIdUno(),
-                                    chats.getUserIdDOS(),
-                                    chats.getConversationId()));
+
+                            chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
+                                                   usernameId, urlProfile, chats.getUserIdUno(),
+                                                   chats.getUserIdDOS(), chats.getConversationId()));
                         }
                     }
                     chatListRecycler.setAdapter(chatAdapter);
@@ -145,4 +140,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
 }

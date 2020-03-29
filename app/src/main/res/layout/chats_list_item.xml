@@ -36,7 +36,8 @@
                 android:id="@+id/tv_message_preview_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hola como has estado!! "/>
+                android:maxLines="1"
+                android:text="Hola como has estado!! Hola como has estado!! Hola como has estado!!"/>
 
 
 

@@ -63,7 +63,7 @@ public class ContactsActivity extends AppCompatActivity {
         contactsAdapter.setOnContactClickListener(new ContactsAdapter.OnContactClickListener() {
             @Override
             public void onContactListener(Contact contact) {
-                StartChatWithContact(contact.getUserId(), contact.getUsername(), contact.getConversationId() );
+                StartChatWithContact(contact.getUserId(), contact.getUsername(), contact.getConversationId(), contact.getProfileUrl());
             }
         });
         startFirebaseConfigurations();
@@ -108,7 +108,7 @@ public class ContactsActivity extends AppCompatActivity {
                         if (myUserId != null) {
                             if (!myUserId.equals(user.getUserId())) {
                                 CheckIfExistConversationOnContact(user.getUserId());
-                                contactsList.add(new Contact(user.getUsername(), user.getUsername(), user.getEmail(), user.getUserId(), R.drawable.profile, "Online!!", ""));
+                                contactsList.add(new Contact(user.getUsername(), user.getUsername(), user.getEmail(), user.getUserId(), user.getUrlProfile(), "Online!!", ""));
                                 contactListRecyclerview.setAdapter(contactsAdapter);
                             }
                         }
@@ -124,38 +124,43 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
 
-    public void StartChatWithContact(String contactUserId, String userName, String conversationId){
+    public void StartChatWithContact(String contactUserId, String userName, String conversationId, String contactrUrlProfile){
         Intent chatIntent = new Intent(ContactsActivity.this, ChatingActivity.class);
         chatIntent.putExtra("userId", contactUserId);
         chatIntent.putExtra("username", userName);
         chatIntent.putExtra("conversationId", conversationId);
+        chatIntent.putExtra("contactUrlProfile", contactrUrlProfile);
         startActivity(chatIntent);
         finish();
     }
 
-
-    public void CheckIfExistConversationOnContact(final String secondUserId){
-        databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
-                    Chat chat = objDataSnapshot.getValue(Chat.class);
-                    if (chat !=null ){
-                        if (chat.getSecondUserId().equals(secondUserId)){
-                            for (int i=0 ; i < contactsList.size(); i++){
-                                if (contactsList.get(i).getUserId().equals(chat.getSecondUserId())){
-                                    contactsList.get(i).setConversationId(chat.getConversationId());
+    public void CheckIfExistConversationOnContact(final String secondUserId) {
+        if (secondUserId != null) {
+                databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                            Chat chat = objDataSnapshot.getValue(Chat.class);
+                            if (chat != null) {
+                                if (chat.getSecondUserId() != null){
+                                    if (chat.getSecondUserId().equals(secondUserId)) {
+                                        for (int i = 0; i < contactsList.size(); i++) {
+                                            if (contactsList.get(i).getUserId().equals(chat.getSecondUserId())) {
+                                                contactsList.get(i).setConversationId(chat.getConversationId());
+                                            }
+                                        }
+                                    }
                                 }
                             }
+
                         }
                     }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
 
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        }
     }
 
 

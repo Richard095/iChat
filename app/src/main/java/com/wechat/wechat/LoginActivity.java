@@ -104,7 +104,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         System.out.println(connectionResult);

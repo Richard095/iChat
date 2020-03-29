@@ -6,32 +6,71 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_margin="5dp">
 
+
+        <!--linearLayoutMessageContentId type-Text=layout_width:wrap_content -->
+        <!--linearLayoutMessageContentId type-IMAGE=layout_width:match_parent -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/linearLayoutMessageContentId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp"
-            android:gravity="right">
+            android:gravity="right"
+            android:background="@drawable/message_style">
+
+
+
             <TextView
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ricardo Ramirez Mendez"
+                android:text="Though I cannot reproduce the not wrapping problem, you can fix the positioning problem by using a weight on the first TextView. Using the following XML gives the expected output in the graphical layout view in Eclipse:"
                 android:textColor="#fff"
                 android:textSize="16dp"
-                android:padding="8dp"
-                android:background="@drawable/message_style"/>
+                android:paddingTop="8dp"
+                android:paddingRight="8dp"
+                android:paddingLeft="8dp"
+                />
 
-            <TextView
-                android:id="@+id/tv_createdAt"
+            <ImageView
+                android:id="@+id/iv_imageMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/paisaje"
+                android:adjustViewBounds="true"
+                android:visibility="gone"/>
+
+
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5:45 am"
-                android:textColor="#646464"
-                />
+                android:orientation="horizontal"
+                android:gravity="end">
+                <TextView
+                    android:id="@+id/tv_createdAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5:45 am"
+                    android:textColor="#f2f2f2"
+                    android:textSize="10sp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="8dp"
+                    android:autoLink="all"/>
+
+
+
+            </LinearLayout>
+
+
+
+
         </LinearLayout>
+
 
 
     </LinearLayout>

@@ -9,8 +9,23 @@ public class Chats {
     private String userIdDOS;
     private String userNameUno;
     private String getUserNameDos;
+    private String profileUrlUno;
+    private String profileUrlDos;
 
     public Chats(){}
+
+    public Chats(String previewLastMessage, String previewLastChatCreatedAt, String contactUrlProfile, String conversationId, String userIdUno, String userIdDOS, String userNameUno, String getUserNameDos, String profileUrlUno, String profileUrlDos) {
+        this.previewLastMessage = previewLastMessage;
+        this.previewLastChatCreatedAt = previewLastChatCreatedAt;
+        this.contactUrlProfile = contactUrlProfile;
+        this.conversationId = conversationId;
+        this.userIdUno = userIdUno;
+        this.userIdDOS = userIdDOS;
+        this.userNameUno = userNameUno;
+        this.getUserNameDos = getUserNameDos;
+        this.profileUrlUno = profileUrlUno;
+        this.profileUrlDos = profileUrlDos;
+    }
 
     public String getPreviewLastMessage() {
         return previewLastMessage;
@@ -76,14 +91,19 @@ public class Chats {
         this.getUserNameDos = getUserNameDos;
     }
 
-    public Chats(String previewLastMessage, String previewLastChatCreatedAt, String contactUrlProfile, String conversationId, String userIdUno, String userIdDOS, String userNameUno, String getUserNameDos) {
-        this.previewLastMessage = previewLastMessage;
-        this.previewLastChatCreatedAt = previewLastChatCreatedAt;
-        this.contactUrlProfile = contactUrlProfile;
-        this.conversationId = conversationId;
-        this.userIdUno = userIdUno;
-        this.userIdDOS = userIdDOS;
-        this.userNameUno = userNameUno;
-        this.getUserNameDos = getUserNameDos;
+    public String getProfileUrlUno() {
+        return profileUrlUno;
+    }
+
+    public void setProfileUrlUno(String profileUrlUno) {
+        this.profileUrlUno = profileUrlUno;
+    }
+
+    public String getProfileUrlDos() {
+        return profileUrlDos;
+    }
+
+    public void setProfileUrlDos(String profileUrlDos) {
+        this.profileUrlDos = profileUrlDos;
     }
 }

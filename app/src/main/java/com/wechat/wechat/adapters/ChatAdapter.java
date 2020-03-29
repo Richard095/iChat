@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
 import com.wechat.wechat.models.Chat;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private Context context;
-    ArrayList<Chat> chatList;
+    private ArrayList<Chat> chatList;
 
     private OnChatClickListener onChatClickListener;
 
@@ -44,7 +45,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ChatAdapter.ViewHolder viewHolder, int i) {
         final Chat chat = chatList.get(i);
-        //viewHolder.imageprofile.setImageDrawable(ContextCompat.getDrawable(context, chat.getProfile()));
+
+        Picasso.get()
+                .load(chat.getUrlProfile())
+                .resize(70,70)
+                .centerCrop()
+                .into(viewHolder.imageprofile);
+
+
         viewHolder.fullname.setText(chat.getUsername());
         viewHolder.message_preview.setText(chat.getMessage());
 
@@ -64,9 +72,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        public ImageView imageprofile;
-        public TextView fullname, message_preview;
-        public ViewHolder(@NonNull View itemView) {
+        private ImageView imageprofile;
+        private TextView fullname, message_preview;
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageprofile = itemView.findViewById(R.id.img_profile_chat);
             fullname = itemView.findViewById(R.id.tv_fullname_chat);

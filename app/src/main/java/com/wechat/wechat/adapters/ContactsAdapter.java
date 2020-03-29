@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
 import com.wechat.wechat.models.Contact;
 
@@ -51,7 +52,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ContactsAdapter.ViewHolder viewHolder, int i) {
         final Contact contact = contactsList.get(i);
-        viewHolder.imageprofile.setImageDrawable(ContextCompat.getDrawable(context, contact.getImageId()));
+        Picasso.get()
+                .load(contact.getProfileUrl())
+                .resize(70,70)
+                .centerCrop()
+                .into(viewHolder.imageprofile);
         viewHolder.fullname.setText(contact.getFullname());
         viewHolder.status.setText(contact.getStatus());
 
@@ -72,9 +77,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        public ImageView imageprofile;
-        public TextView fullname, status;
-        public ViewHolder(@NonNull View itemView) {
+        private ImageView imageprofile;
+        private TextView fullname, status;
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imageprofile = itemView.findViewById(R.id.img_profile);
