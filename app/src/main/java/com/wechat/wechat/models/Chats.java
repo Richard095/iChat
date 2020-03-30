@@ -3,7 +3,6 @@ package com.wechat.wechat.models;
 public class Chats {
     private String previewLastMessage;
     private String previewLastChatCreatedAt;
-    private String contactUrlProfile;
     private String conversationId;
     private String userIdUno;
     private String userIdDOS;
@@ -14,10 +13,9 @@ public class Chats {
 
     public Chats(){}
 
-    public Chats(String previewLastMessage, String previewLastChatCreatedAt, String contactUrlProfile, String conversationId, String userIdUno, String userIdDOS, String userNameUno, String getUserNameDos, String profileUrlUno, String profileUrlDos) {
+    public Chats(String previewLastMessage, String previewLastChatCreatedAt, String conversationId, String userIdUno, String userIdDOS, String userNameUno, String getUserNameDos, String profileUrlUno, String profileUrlDos) {
         this.previewLastMessage = previewLastMessage;
         this.previewLastChatCreatedAt = previewLastChatCreatedAt;
-        this.contactUrlProfile = contactUrlProfile;
         this.conversationId = conversationId;
         this.userIdUno = userIdUno;
         this.userIdDOS = userIdDOS;
@@ -43,13 +41,6 @@ public class Chats {
         this.previewLastChatCreatedAt = previewLastChatCreatedAt;
     }
 
-    public String getContactUrlProfile() {
-        return contactUrlProfile;
-    }
-
-    public void setContactUrlProfile(String contactUrlProfile) {
-        this.contactUrlProfile = contactUrlProfile;
-    }
 
     public String getConversationId() {
         return conversationId;

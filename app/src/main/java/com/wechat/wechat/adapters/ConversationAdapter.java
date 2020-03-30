@@ -29,6 +29,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
 
+
     @NonNull
     @Override
     public ConversationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -50,6 +51,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             Picasso.get().load(conversation.getUrlImage()).into(viewHolder.imageMessage);
             viewHolder.imageMessage.setVisibility(View.VISIBLE);
         }
+
 
     }
 

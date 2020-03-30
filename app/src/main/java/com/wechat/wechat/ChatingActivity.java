@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.adapters.ConversationAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
@@ -40,9 +42,14 @@ import com.wechat.wechat.models.User;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 
@@ -86,7 +93,7 @@ public class ChatingActivity extends AppCompatActivity {
         messagesRecyclerview= findViewById(R.id.recyclerview_chating_id);
         imageSendMessage = findViewById(R.id.iv_sendImage);
 
-        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL, true);
         linearLayoutManager.setReverseLayout(true);
         messagesRecyclerview.setLayoutManager(linearLayoutManager);
         conversationAdapter = new ConversationAdapter(this,conversationList);
@@ -115,6 +122,8 @@ public class ChatingActivity extends AppCompatActivity {
                 chooseImageAndSend();
             }
         });
+
+
 
         toolbarConfigurations();
         startFirebaseConfigurations();
@@ -152,8 +161,7 @@ public class ChatingActivity extends AppCompatActivity {
         if (conversationId.equals("")){
             String uniqueID = UUID.randomUUID().toString();
             conversationId = uniqueID;
-            //Send message first time
-            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt,myUserId, contactUserId, uniqueID );
+            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt, contactUserId, uniqueID );
             getMessages();
 
         }else{
@@ -161,8 +169,8 @@ public class ChatingActivity extends AppCompatActivity {
         }
     }
 
-    public void saveConversation(final String username, final String message, final String createdAt, final String firstUserId, final String secondUserId, final String conversationId){
-        Chat chat = new Chat(username,message,createdAt,"",firstUserId, secondUserId, conversationId);
+    public void saveConversation(final String username, final String message, final String createdAt,  final String secondUserId, final String conversationId){
+        Chat chat = new Chat(username,message,createdAt,"", secondUserId, conversationId);
         databaseReference.child("Conversations").child(conversationId).setValue(chat)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -171,7 +179,6 @@ public class ChatingActivity extends AppCompatActivity {
                         saveMyContactsWithChatActive(conversationId);
                     }
                 });
-
     }
 
     public void saveMyContactsWithChatActive(final String conversationId){
@@ -184,9 +191,8 @@ public class ChatingActivity extends AppCompatActivity {
                             if (myUserId != null){
                                 if (myUserId.equals(user.getUserId())){
                                     Chats chats = new Chats(
-                                            "XD",
-                                            "Timepstamp provicional",
-                                            "",
+                                            message,
+                                            "5:49 PM",
                                             conversationId,
                                             myUserId,
                                             contactUserId,
@@ -212,7 +218,7 @@ public class ChatingActivity extends AppCompatActivity {
 
 
     public void sendMessage(final String conversationId){
-        DateFormat df = new SimpleDateFormat("d MMMM yyyy, hh:mm aa");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String createdAt = df.format(Calendar.getInstance().getTime());
         message = typingInput.getText().toString();
 
@@ -223,6 +229,8 @@ public class ChatingActivity extends AppCompatActivity {
             databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
             databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
             typingInput.setText("");
+
+
         }else{
             Conversation conversation = new Conversation(message, createdAt, uriImage.toString(),typeMessage,conversationId);
             String uniqueID = UUID.randomUUID().toString();
@@ -231,11 +239,14 @@ public class ChatingActivity extends AppCompatActivity {
             databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
             databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
             typingInput.setText("");
+
+
         }
 
     }
 
     public void getMessages(){
+
         databaseReference.child("Conversations").child(conversationId).child("Messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -244,7 +255,10 @@ public class ChatingActivity extends AppCompatActivity {
                     Conversation conversation = objDataSnapshot.getValue(Conversation.class);
                     conversationList.add(conversation);
                 }
+                orderMessagesList(conversationList);
                 messagesRecyclerview.setAdapter(conversationAdapter);
+                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount()-1);
+                modifyCreatedAtToFormat(conversationList);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -289,6 +303,7 @@ public class ChatingActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Toast.makeText(ChatingActivity.this, "Imagen subida con exito!", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -296,6 +311,7 @@ public class ChatingActivity extends AppCompatActivity {
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
                 if (!task.isSuccessful()) {
 
                     throw task.getException();
@@ -318,5 +334,44 @@ public class ChatingActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void orderMessagesList(ArrayList<Conversation> arraylist) {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            Collections.sort(arraylist, new Comparator<Conversation>() {
+                @Override
+                public int compare(Conversation o1, Conversation o2) {
+                    try {
+                        return simpleDateFormat.parse(o2.getCreated_At()).compareTo(simpleDateFormat.parse(o1.getCreated_At()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return 0;
+                    }
+                }
+            });
+    }
+
+    private void modifyCreatedAtToFormat(ArrayList<Conversation> messageList) {
+
+        for (int i=0; i < messageList.size(); i++){
+            String createdAt = messageList.get(i).getCreated_At();
+
+
+            try {
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+                Date d  = sd.parse(createdAt);
+                sd = new SimpleDateFormat("d MMMM yyyy, hh:mm aa");
+                String  newFormat  = sd.format(d);
+                messageList.get(i).setCreated_At(newFormat);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+    }
+
 
 }

@@ -8,10 +8,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -89,14 +92,22 @@ public class MainActivity extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.chat_menu, menu);
+        MenuItem notificationItem = menu.findItem(R.id.action_notification);
+
+        notificationItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
         return true;
     }
-
 
     public void openContacts(){
         Intent intent = new Intent(this, ContactsActivity.class);
@@ -125,9 +136,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
-                                                   usernameId, urlProfile, chats.getUserIdUno(),
-                                                   chats.getUserIdDOS(), chats.getConversationId()));
-                        }
+                                                   "5:49 PM", urlProfile,
+                                                   chats.getUserIdDOS(), chats.getConversationId())); }
                     }
                     chatListRecycler.setAdapter(chatAdapter);
                 }

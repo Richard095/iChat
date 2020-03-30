@@ -6,18 +6,17 @@ public class Chat {
     private String message;
     private String created_At;
     private String urlProfile;
-    private String firstUserId;
     private String secondUserId;
     private String conversationId;
 
     public Chat(){}
 
-    public Chat(String username, String message, String created_At, String urlProfile, String firstUserId, String secondUserId, String conversationId) {
+    public Chat(String username, String message, String created_At, String urlProfile, String secondUserId, String conversationId) {
         this.username = username;
         this.message = message;
         this.created_At = created_At;
         this.urlProfile = urlProfile;
-        this.firstUserId = firstUserId;
+
         this.secondUserId = secondUserId;
         this.conversationId = conversationId;
     }
@@ -53,15 +52,6 @@ public class Chat {
     public void setUrlProfile(String urlProfile) {
         this.urlProfile = urlProfile;
     }
-
-    public String getFirstUserId() {
-        return firstUserId;
-    }
-
-    public void setFirstUserId(String firstUserId) {
-        this.firstUserId = firstUserId;
-    }
-
     public String getSecondUserId() {
         return secondUserId;
     }
