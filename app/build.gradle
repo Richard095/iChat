@@ -37,7 +37,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.google.android.material:material:1.2.0-alpha05'
-
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.pixplicity.sharp:library:1.1.0'
 
 }
 apply plugin: 'com.google.gms.google-services'  // Google Play services Gradle plugin

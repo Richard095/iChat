@@ -1,4 +1,4 @@
-package com.wechat.wechat;
+package com.wechat.wechat.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     String myUserId;
 
     private  String nameContact="", usernameId="", urlProfile="";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

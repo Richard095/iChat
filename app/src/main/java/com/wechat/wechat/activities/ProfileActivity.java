@@ -1,4 +1,4 @@
-package com.wechat.wechat;
+package com.wechat.wechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -16,7 +15,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
+import com.wechat.wechat.R;
+import com.wechat.wechat.adapters.Utils;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -75,13 +75,16 @@ public class ProfileActivity extends AppCompatActivity {
                            String  myUsername = childDataSnapshot.child("username").getValue().toString();
                             String  urlProfile = childDataSnapshot.child("urlProfile").getValue().toString();
                             tv_username_profile.setText(myUsername);
-
+                            Utils.fetchSvg(ProfileActivity.this, urlProfile, iv_thumb);
+                            /**
                             Picasso.get()
                                     .load(urlProfile)
                                     .resize(500,500)
                                     .centerCrop()
                                     .placeholder(R.drawable.waiting)
                                     .into(iv_thumb);
+
+                             */
                         }
                     }
                     @Override

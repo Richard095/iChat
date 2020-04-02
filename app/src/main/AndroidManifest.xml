@@ -14,16 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".activities.ProfileActivity"></activity>
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activities.RegisterActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar.Bridge"
             android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".NotificationActivity" />
+        <activity android:name=".activities.NotificationActivity" />
         <activity
-            android:name=".ChatingActivity"
+            android:name=".activities.ChatingActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -31,8 +31,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ContactsActivity" />
+        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.ContactsActivity" />
     </application>
 
 </manifest>

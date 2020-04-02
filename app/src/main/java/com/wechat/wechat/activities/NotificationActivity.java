@@ -1,4 +1,4 @@
-package com.wechat.wechat;
+package com.wechat.wechat.activities;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.InvitationAdapter;
 import com.wechat.wechat.helpers.ValidationHelper;
 import com.wechat.wechat.models.Invitation;

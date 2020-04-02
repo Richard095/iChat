@@ -1,9 +1,9 @@
-package com.wechat.wechat;
+package com.wechat.wechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +17,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.wechat.wechat.R;
 import com.wechat.wechat.helpers.EncriptHelper;
+import com.wechat.wechat.helpers.RandomAvatarHelper;
 import com.wechat.wechat.helpers.ValidationHelper;
 import com.wechat.wechat.models.User;
 
@@ -89,7 +91,9 @@ public class RegisterActivity extends AppCompatActivity {
 
                     String passwordEncripted = EncriptHelper.encrypt(password);
                     String userId = UUID.randomUUID().toString();
-                    String randomImageUrl =  "https://www.clipartmax.com/png/middle/257-2572603_user-man-social-avatar-profile-icon-man-avatar-in-circle.png";
+                    String randomImageUrl = RandomAvatarHelper.getRandomAvatarUrl();
+
+
                     User user = new User(fullname,email,userId,randomImageUrl,fullname,passwordEncripted);
                     saveUser(userId,user,password);
                 }else{

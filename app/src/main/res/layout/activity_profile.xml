@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#fff"
 
-    tools:context=".ProfileActivity">
+    tools:context=".activities.ProfileActivity">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
@@ -48,7 +48,7 @@
             android:id="@+id/iv_thumb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/profile"
+            android:src="@drawable/waiting"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"/>
 

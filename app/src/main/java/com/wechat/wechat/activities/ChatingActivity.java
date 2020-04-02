@@ -1,4 +1,4 @@
-package com.wechat.wechat;
+package com.wechat.wechat.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.ConversationAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
