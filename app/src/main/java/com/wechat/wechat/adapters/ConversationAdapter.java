@@ -2,16 +2,16 @@ package com.wechat.wechat.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
 import com.wechat.wechat.models.Conversation;
@@ -38,7 +38,12 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ConversationAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ConversationAdapter.ViewHolder viewHolder, int i) {
+
+
+
+
+
         final Conversation conversation = conversationsList.get(i);
         viewHolder.message.setText(conversation.getMessage());
         viewHolder.createdAt.setText(conversation.getCreated_At());
@@ -48,7 +53,12 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             viewHolder.message.setVisibility(View.GONE);
             viewHolder.linearLayoutMessageContentId.setBackgroundColor(Color.parseColor("#f2f2f2"));
             viewHolder.createdAt.setTextColor(Color.parseColor("#646464"));
-            Picasso.get().load(conversation.getUrlImage()).into(viewHolder.imageMessage);
+
+            Picasso
+                    .get()
+                    .load(conversation.getUrlImage())
+                    .placeholder(R.drawable.waiting)
+                    .into(viewHolder.imageMessage);
             viewHolder.imageMessage.setVisibility(View.VISIBLE);
         }
 
@@ -61,7 +71,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView message, createdAt;
+        private TextView message, createdAt, loadingImage;
         private ImageView imageMessage;
         private LinearLayout linearLayoutMessageContentId;
         private ViewHolder(@NonNull View itemView) {
@@ -70,7 +80,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             createdAt = itemView.findViewById(R.id.tv_createdAt);
             imageMessage = itemView.findViewById(R.id.iv_imageMessage);
             linearLayoutMessageContentId = itemView.findViewById(R.id.linearLayoutMessageContentId);
-
+            loadingImage = itemView.findViewById(R.id.tv_loading_image);
         }
     }
 }

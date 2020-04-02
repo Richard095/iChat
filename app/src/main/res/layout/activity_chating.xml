@@ -7,7 +7,7 @@
     tools:context=".ChatingActivity">
 
     <!-- Toolbar -->
-    <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.appcompat.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/activit_chating_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -26,16 +26,16 @@
             android:text="Ricardo"
             android:textColor="#ffffff"
             android:textStyle="bold"/>
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_chating_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/activit_chating_toolbar"
         android:layout_above="@+id/content_input_message_id">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 
     <LinearLayout
@@ -64,7 +64,7 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"/>
 
-       <android.support.design.widget.FloatingActionButton
+       <com.google.android.material.floatingactionbutton.FloatingActionButton
            android:id="@+id/send_message_button_id"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"

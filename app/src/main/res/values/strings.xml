@@ -2,4 +2,6 @@
     <string name="app_name">wechat</string>
     <string name="login_succes">Usuario registrado con exito!</string>
     <string name="login_failed">Ocurrio un error comprueba tu conexión a internet!</string>
+    <string name="email">Email</string>
+    <string name="enviale_una_invitación_a_un_amigo_mediante_su_correo">Enviale una invitacion a un amigo mediante su correo</string>
 </resources>

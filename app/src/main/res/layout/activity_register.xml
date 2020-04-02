@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context=".RegisterActivity">
+
+    <ProgressBar
+        android:id="@+id/pb_progressbar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:id="@+id/container_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="18dp">
+
+       <LinearLayout
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="end">
+           <TextView
+               android:id="@+id/tv_cancel"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Cancelar"
+               android:padding="4dp"
+               android:textColor="#f50057"/>
+           <TextView
+               android:id="@+id/tv_save"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Guardar"
+               android:padding="4dp"
+               android:textColor="#3d5afe"/>
+       </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_register_presentation"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/chatapp"
+            android:adjustViewBounds="true"
+            android:layout_margin="18dp"
+            android:layout_gravity="center"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/form_fullnameImput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre completo"
+            android:layout_margin="16dp"
+            app:boxBackgroundColor="#eceff1"
+            app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
+            app:hintTextColor="#3d5afe"
+            app:boxStrokeColor="#3d5afe">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tie_fullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/form_username_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:layout_margin="16dp"
+            app:boxBackgroundColor="#eceff1"
+            app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
+            app:hintTextColor="#3d5afe"
+            app:boxStrokeColor="#3d5afe">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tie_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/form_password_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:layout_margin="16dp"
+            app:boxBackgroundColor="#eceff1"
+            app:shapeAppearance="?attr/shapeAppearanceSmallComponent"
+            app:hintTextColor="#3d5afe"
+            app:boxStrokeColor="#3d5afe">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tie_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+
+</RelativeLayout>

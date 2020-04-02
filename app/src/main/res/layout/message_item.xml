@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -21,6 +23,14 @@
             android:gravity="right"
             android:background="@drawable/message_style">
 
+            <TextView
+                android:id="@+id/tv_loading_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#646464"
+                android:textAlignment="center"
+                android:text="Cargando imagen..."
+                android:visibility="gone"/>
 
 
             <TextView

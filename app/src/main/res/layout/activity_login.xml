@@ -4,12 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".LoginActivity">
+
+
+    <LinearLayout
+        android:id="@+id/progres_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/pb_login_progressbar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Iniciando sesión"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:textColor="#646464"/>
+    </LinearLayout>
+
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/layout_center"
+        android:id="@+id/container_login"
         android:layout_centerInParent="true">
 
 
@@ -22,30 +49,31 @@
             android:layout_marginBottom="64dp"/>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/usern"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_marginLeft="22dp"
             android:layout_marginRight="22dp"
             android:padding="2dp"
             android:background="@drawable/textfield"
             android:layout_below="@id/logo">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/username"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Usuario"
+                android:hint="Email"
                 android:background="#eceff1"
                 android:layout_margin="5dp"
                 android:padding="2dp"
-                android:lines="1"/>
+                android:lines="1"
+                android:inputType="textEmailAddress"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,7 +85,7 @@
             android:background="@drawable/textfield"
             android:layout_below="@+id/usern">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,13 +95,13 @@
                 android:inputType="textPassword"
                 android:lines="1"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
 
         <Button
             android:layout_centerHorizontal="true"
-            android:id="@+id/main_activity_button"
+            android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Iniciar sesión"
@@ -83,26 +111,28 @@
             android:layout_below="@+id/password"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            />
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            style="?android:attr/borderlessButtonStyle"
+            android:stateListAnimator="@null"/>
 
 
         <TextView
             android:id="@+id/loginwith"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#646464"
-            android:text="Iniciar sesión con "
-            android:textSize="18sp"
+            android:textColor="#3d5af3"
+            android:text="Registrarse"
             android:gravity="center"
-            android:layout_below="@id/main_activity_button"
-            android:layout_marginTop="18dp"/>
+            android:layout_below="@id/login_button"
+            android:layout_centerHorizontal="true"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/loginwith"
             android:orientation="horizontal"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="18dp"
             android:gravity="center">
 
 

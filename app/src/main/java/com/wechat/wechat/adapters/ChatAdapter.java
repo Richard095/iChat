@@ -1,9 +1,9 @@
 package com.wechat.wechat.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +46,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ChatAdapter.ViewHolder viewHolder, int i) {
         final Chat chat = chatList.get(i);
 
+        String url = chat.getUrlProfile();
+        if (chat.getUrlProfile().equals("") ){
+            url = "https://pngimage.net/wp-content/uploads/2018/05/button-profile-png-8.png";
+        }
+
+
         Picasso.get()
-                .load(chat.getUrlProfile())
+                .load(url)
                 .resize(70,70)
                 .centerCrop()
                 .into(viewHolder.imageprofile);
-
 
         viewHolder.fullname.setText(chat.getUsername());
         viewHolder.message_preview.setText(chat.getMessage());
@@ -62,7 +67,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 onChatClickListener.onChatListener(chat);
             }
         });
-
 
     }
 

@@ -1,17 +1,14 @@
 package com.wechat.wechat;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
-
-
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,21 +18,21 @@ import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.adapters.ContactsAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Contact;
-import com.wechat.wechat.models.User;
-
+import com.wechat.wechat.models.Invitation;
 import java.util.ArrayList;
 
 public class ContactsActivity extends AppCompatActivity {
 
-    RecyclerView contactListRecyclerview;
     LinearLayoutManager linearLayoutManager;
-
-    FirebaseDatabase firebaseDatabase;
+    RecyclerView contactListRecyclerview;
     DatabaseReference databaseReference;
+    FirebaseDatabase firebaseDatabase;
     ContactsAdapter contactsAdapter;
 
     ArrayList<Contact> contactsList = new  ArrayList<>();
+    ArrayList<Invitation> tempContactList = new ArrayList<>();
     String  myUserId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,18 +54,15 @@ public class ContactsActivity extends AppCompatActivity {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
         myUserId  = pref.getString("token", null);
 
-
-
-
         contactsAdapter.setOnContactClickListener(new ContactsAdapter.OnContactClickListener() {
             @Override
             public void onContactListener(Contact contact) {
                 StartChatWithContact(contact.getUserId(), contact.getUsername(), contact.getConversationId(), contact.getProfileUrl());
             }
         });
-        startFirebaseConfigurations();
-        gettingAllMyContacts();
 
+        startFirebaseConfigurations();
+        fetchMyContacts();
 
     }
 
@@ -77,11 +71,8 @@ public class ContactsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_contact, menu);
-
-
         return true;
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -89,42 +80,11 @@ public class ContactsActivity extends AppCompatActivity {
         return true;
     }
 
-
     private void startFirebaseConfigurations() {
         FirebaseApp.initializeApp(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
     }
-
-    public void gettingAllMyContacts(){
-        databaseReference.child("User").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                contactsList.clear();
-
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
-
-                    User user = objDataSnapshot.getValue(User.class);
-                    if (user != null) {
-                        if (myUserId != null) {
-                            if (!myUserId.equals(user.getUserId())) {
-                                CheckIfExistConversationOnContact(user.getUserId());
-                                contactsList.add(new Contact(user.getUsername(), user.getUsername(), user.getEmail(), user.getUserId(), user.getUrlProfile(), "Online!!", ""));
-                                contactListRecyclerview.setAdapter(contactsAdapter);
-                            }
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
 
     public void StartChatWithContact(String contactUserId, String userName, String conversationId, String contactrUrlProfile){
         Intent chatIntent = new Intent(ContactsActivity.this, ChatingActivity.class);
@@ -136,6 +96,9 @@ public class ContactsActivity extends AppCompatActivity {
         finish();
     }
 
+
+
+    /** checking if there is an active conversation with any of the contacts on contactsList*/
     public void CheckIfExistConversationOnContact(final String secondUserId) {
         if (secondUserId != null) {
                 databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
@@ -154,17 +117,68 @@ public class ContactsActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-
                         }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
+
                     }
                 });
-
         }
     }
 
 
+    /** Fetching  list contacts*/
+
+    public void fetchMyContacts(){
+        databaseReference.child("User").child(myUserId).child("Contacts")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        tempContactList.clear();
+                        contactsList.clear();
+                        for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                            Invitation invitation = objDataSnapshot.getValue(Invitation.class);
+                            tempContactList.add(invitation);
+                        }
+                        for ( Invitation invitation : tempContactList ){
+                            getDataForEachContact(invitation.getUserId());
+                            CheckIfExistConversationOnContact(invitation.getUserId());
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    /** Getting data for each contact in my list*/
+
+    public void getDataForEachContact(final String userId) {
+        databaseReference.child("User")
+                .orderByChild("userId").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                            String username = childDataSnapshot.child("username").getValue().toString();
+                            String email = childDataSnapshot.child("email").getValue().toString();
+                            String userId = childDataSnapshot.child("userId").getValue().toString();
+                            String profileUrl = childDataSnapshot.child("urlProfile").getValue().toString();
+                            contactsList.add(new Contact(username, username, email, userId, profileUrl, "Online", ""));
+                        }
+                        contactListRecyclerview.setAdapter(contactsAdapter);
+
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
 
 }

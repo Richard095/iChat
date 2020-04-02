@@ -7,7 +7,7 @@
     tools:context=".NotificationActivity">
 
     <!-- Toolbar -->
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_activity_notifications_toolbar"
         android:layout_width="match_parent"
@@ -27,17 +27,19 @@
             android:text="Solicitud de amigos"
             android:textColor="#ffffff"/>
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_notification_id"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/main_activity_notifications_toolbar">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
-    <android.support.design.widget.FloatingActionButton
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_notification_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,8 +47,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="18dp"/>
-
-
 
 
 </RelativeLayout>

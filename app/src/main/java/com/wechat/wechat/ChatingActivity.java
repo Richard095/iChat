@@ -4,15 +4,15 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.adapters.ConversationAdapter;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
@@ -49,7 +48,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 
@@ -93,7 +91,7 @@ public class ChatingActivity extends AppCompatActivity {
         messagesRecyclerview= findViewById(R.id.recyclerview_chating_id);
         imageSendMessage = findViewById(R.id.iv_sendImage);
 
-        linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL, true);
+        linearLayoutManager = new LinearLayoutManager(ChatingActivity.this,LinearLayoutManager.VERTICAL, true);
         linearLayoutManager.setReverseLayout(true);
         messagesRecyclerview.setLayoutManager(linearLayoutManager);
         conversationAdapter = new ConversationAdapter(this,conversationList);
@@ -303,7 +301,6 @@ public class ChatingActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Toast.makeText(ChatingActivity.this, "Imagen subida con exito!", Toast.LENGTH_SHORT).show();
-
             }
         });
 
