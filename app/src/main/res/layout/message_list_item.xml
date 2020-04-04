@@ -6,11 +6,15 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/ll_main_message_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="right"
-        android:layout_margin="5dp">
+        android:gravity="end"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        >
 
 
         <!--linearLayoutMessageContentId type-Text=layout_width:wrap_content -->
@@ -29,9 +33,9 @@
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="sssssssssssssssss"
+                android:text="Message"
                 android:textColor="#fff"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingLeft="8dp"

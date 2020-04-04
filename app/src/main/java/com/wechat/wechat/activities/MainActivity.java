@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +25,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.ChatAdapter;
+import com.wechat.wechat.helpers.ConverterHelper;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
+import com.wechat.wechat.models.Invitation;
 
 
 import java.util.ArrayList;
@@ -45,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
     String myUserId;
 
     private  String nameContact="", usernameId="", urlProfile="";
+    ArrayList<Invitation> invitationList = new ArrayList<>();
 
+    private static int cart_count=0;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         startFirebaseConfiguration();
         fetchMyConversations();
-
+        countMyInvitations();
         
         chatAdapter.setOnChatClickListener(new ChatAdapter.OnChatClickListener() {
             @Override
@@ -83,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 openContacts();
+
             }
         });
 
@@ -108,9 +115,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.chat_menu, menu);
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
         MenuItem notificationItem = menu.findItem(R.id.action_notification);
+
+        notificationItem.setIcon(ConverterHelper.convertLayoutToImage(MainActivity.this,cart_count,R.drawable.ic_notifications_active_black_24dp));
+
         MenuItem profile = menu.findItem(R.id.action_acount);
 
         notificationItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -131,9 +140,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         return true;
     }
+
+
+
 
     public void openContacts(){
         Intent intent = new Intent(this, ContactsActivity.class);
@@ -188,5 +199,31 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
+    /** Getting my invitations */
+
+    public void countMyInvitations() {
+        databaseReference.child("User").child(myUserId).child("Invitations")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        invitationList.clear();
+                        for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                            Invitation invitation = objDataSnapshot.getValue(Invitation.class);
+                            invitationList.add(invitation);
+                        }
+                        cart_count = invitationList.size();
+                        invalidateOptionsMenu();
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+
+
 
 }

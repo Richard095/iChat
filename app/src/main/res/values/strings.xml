@@ -4,4 +4,8 @@
     <string name="login_failed">Ocurrio un error comprueba tu conexión a internet!</string>
     <string name="email">Email</string>
     <string name="enviale_una_invitación_a_un_amigo_mediante_su_correo">Enviale una invitacion a un amigo mediante su correo</string>
+    <string name="iniciando_sesion">Iniciando sesión...</string>
+    <string name="password">Password</string>
+    <string name="iniciar_sesi_n">Iniciar sesión</string>
+
 </resources>

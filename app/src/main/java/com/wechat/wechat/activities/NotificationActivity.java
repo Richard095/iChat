@@ -1,5 +1,6 @@
 package com.wechat.wechat.activities;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
@@ -136,7 +137,7 @@ public class NotificationActivity extends AppCompatActivity {
     public void openDialog() {
         final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.costum_dialog, null);
+        View dialogView = inflater.inflate(R.layout.dialog_send_invitation, null);
 
         final EditText emailInput = dialogView.findViewById(R.id.et_send_Email);
         final Button sendInvitation = dialogView.findViewById(R.id.notification_send_req_button_id);
@@ -171,6 +172,12 @@ public class NotificationActivity extends AppCompatActivity {
                             sendInvitation.setEnabled(false);
                             editText.setText("");
                             someoneId = "";
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(NotificationActivity.this, "Conexión no establecida", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -240,7 +247,6 @@ public class NotificationActivity extends AppCompatActivity {
                             defaultImage.setVisibility(View.GONE);
                         }
 
-
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -280,7 +286,7 @@ public class NotificationActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(NotificationActivity.this, "Invitation deleted", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(NotificationActivity.this, "Invitation deleted", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

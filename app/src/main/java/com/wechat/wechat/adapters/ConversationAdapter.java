@@ -6,6 +6,7 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @NonNull
     @Override
     public ConversationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view  = LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
+        View view  = LayoutInflater.from(context).inflate(R.layout.message_list_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -42,13 +43,18 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         SharedPreferences pref = context.getSharedPreferences("MyPref", 0);
         String myUserId  = pref.getString("token", null);
+
         viewHolder.messageText.setText(conversation.getMessage());
         if (!conversation.getSenderId().equals("")){
             assert myUserId != null;
             if(myUserId.equals(conversation.getSenderId())){
                 viewHolder.linearLayoutMessageContent.setBackgroundResource(R.drawable.message_text_by_me_bg);
+            }else{
+                viewHolder.linearLayoutMainContainer.setGravity(Gravity.START);
             }
         }
+
+
         viewHolder.createdAt.setText(conversation.getCreated_At());
 
         if (conversation.getMessageType().equals("IMAGE")){
@@ -67,7 +73,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         }
 
-
     }
 
     @Override
@@ -78,7 +83,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     class ViewHolder extends RecyclerView.ViewHolder{
         private TextView messageText, createdAt;
         private ImageView imageMessage;
-        private LinearLayout linearLayoutMessageContent;
+        private LinearLayout linearLayoutMessageContent, linearLayoutMainContainer;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +91,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             createdAt = itemView.findViewById(R.id.tv_createdAt);
             imageMessage = itemView.findViewById(R.id.iv_imageMessage);
             linearLayoutMessageContent = itemView.findViewById(R.id.linearLayoutMessageContentId);
+            linearLayoutMainContainer = itemView.findViewById(R.id.ll_main_message_container);
         }
     }
 }

@@ -28,15 +28,12 @@ public class MessageHelper {
 
 
     public static void modifyCreatedAtToFormat(ArrayList<Conversation> messageList) {
-
         for (int i=0; i < messageList.size(); i++){
             String createdAt = messageList.get(i).getCreated_At();
-
-
             try {
                 SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
                 Date d  = sd.parse(createdAt);
-                sd = new SimpleDateFormat("d MMMM yyyy, hh:mm aa");
+                sd = new SimpleDateFormat("h:mm a"); //h:mm a | d MMMM yyyy, hh:mm aa
                 String  newFormat  = sd.format(d);
                 messageList.get(i).setCreated_At(newFormat);
 

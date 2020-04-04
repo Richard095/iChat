@@ -21,7 +21,7 @@ import com.wechat.wechat.R;
 public class ProfileActivity extends AppCompatActivity {
 
     ImageView thumbProfileImage;
-    TextView profileTextView,usernameProfileText;
+    TextView profileTextView,usernameProfileText, emailProfileText;
     Toolbar toolbar;
 
     DatabaseReference databaseReference;
@@ -55,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileTextView = findViewById(R.id.tv_status_profile);
         usernameProfileText = findViewById(R.id.tv_username_profile);
         toolbar = findViewById(R.id.main_activity_profile_toolbar);
+        emailProfileText = findViewById(R.id.tv_email_profile);
     }
 
     /** Toolbar configuration */
@@ -90,9 +91,11 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                           String  myUsername = childDataSnapshot.child("username").getValue().toString();
+                            String  myUsername = childDataSnapshot.child("username").getValue().toString();
                             String  urlProfile = childDataSnapshot.child("urlProfile").getValue().toString();
+                            String  email = childDataSnapshot.child("email").getValue().toString();
                             usernameProfileText.setText(myUsername);
+                            emailProfileText.setText(email);
                             //Utils.fetchSvg(ProfileActivity.this, urlProfile, thumbProfileImage);
 
                             Picasso.get()

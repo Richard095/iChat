@@ -18,13 +18,13 @@
         <ProgressBar
             android:id="@+id/pb_login_progressbar"
             style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:layout_gravity="center" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Iniciando sesión"
+            android:text="@string/iniciando_sesion"
             android:textSize="18sp"
             android:textAlignment="center"
             android:textColor="#646464"/>
@@ -64,7 +64,7 @@
                 android:id="@+id/tiet_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:background="#eceff1"
                 android:layout_margin="5dp"
                 android:padding="2dp"
@@ -89,7 +89,7 @@
                 android:id="@+id/pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contraseña"
+                android:hint="@string/password"
                 android:background="#eceff1"
                 android:layout_margin="5dp"
                 android:inputType="textPassword"
@@ -104,7 +104,7 @@
             android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Iniciar sesión"
+            android:text="@string/iniciar_sesi_n"
             android:background="@drawable/login_button_normal"
             android:textColor="#ffffff"
             android:layout_margin="10dp"

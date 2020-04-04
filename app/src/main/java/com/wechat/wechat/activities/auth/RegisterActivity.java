@@ -28,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText fullnameInput;
     TextInputEditText emailInput;
     TextInputEditText passwordInput;
+    TextView startingRegister;
 
     TextView cancelTextView, saveTextView;
     ProgressBar progressBar;
@@ -68,6 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.tie_email);
         passwordInput = findViewById(R.id.tie_password);
         progressBar = findViewById(R.id.pb_progressbar);
+        startingRegister = findViewById(R.id.tv_register_starting);
         linearLayoutContainerForm = findViewById(R.id.container_form);
     }
 
@@ -112,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void saveUser(final String userId, final User user, final String pass){
         linearLayoutContainerForm.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-
+        startingRegister.setVisibility(View.VISIBLE);
         databaseReference.child("User").child(userId).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -133,6 +135,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this,"Algo paso, intenta de nuevo o comprueba tu conexión a internet", Toast.LENGTH_SHORT).show();
                         linearLayoutContainerForm.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        startingRegister.setVisibility(View.VISIBLE);
                     }
                 });
     }
