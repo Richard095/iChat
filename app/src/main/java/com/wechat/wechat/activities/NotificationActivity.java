@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import java.util.ArrayList;
 
@@ -43,17 +44,42 @@ public class NotificationActivity extends AppCompatActivity {
     String myUserId, someoneId, myUsername;
     ArrayList<Invitation> invitationList = new ArrayList<>();
 
+    ImageView defaultImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-        sendReqFriend = findViewById(R.id.button_notification_id);
-        recyclerviewNotification = findViewById(R.id.recyclerview_notification_id);
-        toolbar = findViewById(R.id.main_activity_notifications_toolbar);
+
+        bindViews();
+
         setSupportActionBar();
+
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerviewNotification.setLayoutManager(linearLayoutManager);
         invitationAdapter = new InvitationAdapter(this, invitationList);
+
+        onClickEvents();
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        myUserId = pref.getString("token", null);
+
+        startFirebaseConfiguration();
+        gettingMyData();
+        getMyInvitations();
+
+    }
+
+
+    public void bindViews(){
+        sendReqFriend = findViewById(R.id.button_notification_id);
+        recyclerviewNotification = findViewById(R.id.recyclerview_notification_id);
+        toolbar = findViewById(R.id.main_activity_notifications_toolbar);
+        defaultImage = findViewById(R.id.iv_default_new_invitation);
+    }
+
+    /** Click events initialization*/
+
+    public void onClickEvents(){
 
         sendReqFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,16 +104,8 @@ public class NotificationActivity extends AppCompatActivity {
                 acceptInvitation(invitation.getUsername(), invitation.getUserId());
             }
         });
-
-
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
-        myUserId = pref.getString("token", null);
-
-        startFirebaseConfiguration();
-        gettingMyData();
-        getMyInvitations();
-
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -110,6 +128,7 @@ public class NotificationActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
     }
+
 
 
     /** Open form dialog  */
@@ -141,6 +160,7 @@ public class NotificationActivity extends AppCompatActivity {
 
     /** Send invitation */
     public void sendInvitation(final EditText editText, final Button sendInvitation) {
+
         Invitation invitation = new Invitation(myUsername, myUserId);
         if (someoneId != null) {
             databaseReference.child("User").child(someoneId).child("Invitations").child(myUserId).setValue(invitation)
@@ -148,8 +168,8 @@ public class NotificationActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(NotificationActivity.this, "Invitación enviada", Toast.LENGTH_SHORT).show();
-                            editText.setText("");
                             sendInvitation.setEnabled(false);
+                            editText.setText("");
                             someoneId = "";
                         }
                     });
@@ -213,6 +233,14 @@ public class NotificationActivity extends AppCompatActivity {
                             invitationList.add(invitation);
                         }
                         recyclerviewNotification.setAdapter(invitationAdapter);
+
+                        if (invitationList.size() == 0){
+                            defaultImage.setVisibility(View.VISIBLE);
+                        }else{
+                            defaultImage.setVisibility(View.GONE);
+                        }
+
+
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -243,7 +271,9 @@ public class NotificationActivity extends AppCompatActivity {
                 });
     }
 
+
     /** Delete invitation */
+
 
     public void deleteInvitation(String newFriendId){
         databaseReference.child("User").child(myUserId).child("Invitations").child(newFriendId).removeValue()

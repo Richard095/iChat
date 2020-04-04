@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.auth.LoginActivity">
 
 
     <LinearLayout
@@ -44,7 +44,7 @@
             android:id="@+id/logo"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/logo"
+            android:src="@drawable/asset_logo"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="64dp"/>
 
@@ -57,7 +57,7 @@
             android:layout_marginLeft="22dp"
             android:layout_marginRight="22dp"
             android:padding="2dp"
-            android:background="@drawable/textfield"
+            android:background="@drawable/container_textview_bg"
             android:layout_below="@id/logo">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -82,7 +82,7 @@
             android:layout_marginRight="22dp"
             android:layout_marginBottom="32dp"
             android:padding="2dp"
-            android:background="@drawable/textfield"
+            android:background="@drawable/container_textview_bg"
             android:layout_below="@+id/usern">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -105,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Iniciar sesión"
-            android:background="@drawable/buttonstyle"
+            android:background="@drawable/login_button_normal"
             android:textColor="#ffffff"
             android:layout_margin="10dp"
             android:layout_below="@+id/password"

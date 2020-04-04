@@ -20,24 +20,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="right"
-            android:background="@drawable/message_style">
+            android:gravity="end"
+            android:background="@drawable/message_text_by_friend_bg">
 
-            <TextView
-                android:id="@+id/tv_loading_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#646464"
-                android:textAlignment="center"
-                android:text="Cargando imagen..."
-                android:visibility="gone"/>
 
 
             <TextView
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Though I cannot reproduce the not wrapping problem, you can fix the positioning problem by using a weight on the first TextView. Using the following XML gives the expected output in the graphical layout view in Eclipse:"
+                android:text="sssssssssssssssss"
                 android:textColor="#fff"
                 android:textSize="16dp"
                 android:paddingTop="8dp"
@@ -49,7 +41,7 @@
                 android:id="@+id/iv_imageMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/paisaje"
+                android:src="@drawable/asset_paisaje"
                 android:adjustViewBounds="true"
                 android:visibility="gone"/>
 

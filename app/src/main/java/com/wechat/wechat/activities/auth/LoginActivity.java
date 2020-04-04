@@ -1,4 +1,4 @@
-package com.wechat.wechat.activities;
+package com.wechat.wechat.activities.auth;
 
 
 import android.content.Intent;
@@ -40,23 +40,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.R;
+import com.wechat.wechat.activities.MainActivity;
 import com.wechat.wechat.helpers.EncriptHelper;
 import com.wechat.wechat.models.User;
 
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+
     private static final int RC_SIGN_IN = 1001;
     private static final int SECOND_ACTIVITY_REQUEST_CODE = 10002;
 
     private static final String TAG = "LoginActivity";
     private static final String LOGIN_METHOD_GOOGLE = "GOOGLE";
     private static final String LOGIN_METHOD_FACEBOOK = "FACEBOOK";
-    private static final String LOGIN_METHOD_CUSTUM_SIGNIN = "CUSTUM_SIGNIN";
 
 
-
-    TextInputEditText emailInput, et_password;
+    TextInputEditText emailInput, passwordInput;
     SignInButton loginButton;
+    TextView loginWith;
+    Button loginButtonWithEmail;
     private GoogleApiClient googleApiClient;
     private FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
@@ -64,21 +66,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     LinearLayout linearLayoutProgress;
     RelativeLayout relativeLayoutFormLogin;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        emailInput = findViewById(R.id.tiet_email);
-        et_password = findViewById(R.id.pass);
-        loginButton = findViewById(R.id.sign_in_button);
-        linearLayoutProgress = findViewById(R.id.progres_id);
-        relativeLayoutFormLogin = findViewById(R.id.container_login);
-        TextView loginwith = findViewById(R.id.loginwith);
-        Button loginButtonWithEmail = findViewById(R.id.login_button);
 
+        bindViews();
 
-        googleSignConfig();
-        startFirebaseConf();
+        startFirebaseConfigurations(); //here were googleSignConfig
+        googleSignInConfigurations();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        loginwith.setOnClickListener(new View.OnClickListener() {
+        loginWith.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -100,12 +98,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         loginButtonWithEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginWithCustumSignin();
+                doLoginWithEmail();
             }
         });
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String token  = pref.getString("token", null); // getting String
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        String token  = pref.getString("token", null);
 
 
         if(token != null){
@@ -116,14 +114,28 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
-    private void startFirebaseConf() {
+    /** binding views from xml */
+
+    public void bindViews(){
+        emailInput = findViewById(R.id.tiet_email);
+        passwordInput = findViewById(R.id.pass);
+        loginButton = findViewById(R.id.sign_in_button);
+        linearLayoutProgress = findViewById(R.id.progres_id);
+        relativeLayoutFormLogin = findViewById(R.id.container_login);
+        loginWith = findViewById(R.id.loginwith);
+        loginButtonWithEmail = findViewById(R.id.login_button);
+    }
+
+
+    private void startFirebaseConfigurations() {
         FirebaseApp.initializeApp(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
     }
 
+
     /** Here start google Authentication */
-    public void googleSignConfig(){
+    public void googleSignInConfigurations(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -165,9 +177,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     String email = data.getStringExtra("email");
                     String password = data.getStringExtra("password");
                     emailInput.setText(email);
-                    et_password.setText(password);
-                    et_password.setFocusable(true);
-                    LoginWithCustumSignin();
+                    passwordInput.setText(password);
+                    passwordInput.setFocusable(true);
+                    doLoginWithEmail();
                 }
             }
         }
@@ -196,7 +208,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
 
-    /** Saving user => Login method => Google */
+    /** Saving asset_user => Login method => Google */
+
     public  void savingUser(String loginMethod, String username, String email, String userId, String urlProfile, String fullname, String password){
         if (loginMethod.equals("GOOGLE")){
             final User user = new User(username,email, userId, urlProfile, fullname, password);
@@ -220,11 +233,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
+
     /** Login with Email */
-    public void LoginWithCustumSignin(){
+
+
+    public void doLoginWithEmail(){
         String email = emailInput.getText().toString();
         linearLayoutProgress.setVisibility(View.VISIBLE);
         relativeLayoutFormLogin.setVisibility(View.GONE);
+
         databaseReference.child("User")
                 .orderByChild("email").equalTo(email)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -235,10 +252,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         if (user != null){
                             for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                                     try {
+
                                         String pass = childDataSnapshot.child("password").getValue().toString();
                                         String userId = childDataSnapshot.child("userId").getValue().toString();
                                         String passDecripted  = EncriptHelper.decrypt(pass);
-                                        String password = et_password.getText().toString();
+                                        String password = passwordInput.getText().toString();
+
                                         if (password.equals(passDecripted)){
                                             SharedPreferences preferences = getApplicationContext().getSharedPreferences("MyPref", 0);
                                             SharedPreferences.Editor editor = preferences.edit();
@@ -254,8 +273,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             relativeLayoutFormLogin.setVisibility(View.VISIBLE);
                                         }
 
-                                    }catch (Exception exeption){
-                                        exeption.printStackTrace();
+                                    }catch (Exception e){
+                                        e.printStackTrace();
                                     }
                             }
                         }else{
@@ -264,6 +283,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "EL usuario no existe", Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                             Log.d("FAILURE", databaseError.toString());

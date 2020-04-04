@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wechat.wechat.R;
 import com.wechat.wechat.models.Invitation;
 
@@ -44,7 +42,7 @@ public class InvitationAdapter extends RecyclerView.Adapter<InvitationAdapter.Vi
     @Override
     public InvitationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view  = LayoutInflater.from(context).inflate(R.layout.invitation_item, parent, false);
+        View view  = LayoutInflater.from(context).inflate(R.layout.invitation_list_item, parent, false);
         return  new ViewHolder(view);
 
     }
@@ -81,6 +79,7 @@ public class InvitationAdapter extends RecyclerView.Adapter<InvitationAdapter.Vi
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             username = itemView.findViewById(R.id.tv_username_invitation);
             acceptInvitation = itemView.findViewById(R.id.button_accept_invitation);
             deleteInvitation = itemView.findViewById(R.id.iv_delete_invitation);

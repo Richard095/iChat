@@ -15,13 +15,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
-import com.wechat.wechat.adapters.Utils;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    ImageView iv_thumb;
-    TextView tv_status_profile,tv_username_profile;
+    ImageView thumbProfileImage;
+    TextView profileTextView,usernameProfileText;
+    Toolbar toolbar;
+
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
 
@@ -33,17 +35,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        iv_thumb = findViewById(R.id.iv_thumb);
-        tv_status_profile = findViewById(R.id.tv_status_profile);
-        tv_username_profile = findViewById(R.id.tv_username_profile);
-        Toolbar toolbar = findViewById(R.id.main_activity_profile_toolbar);
 
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null ){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        bindViews();
+
+        toolbarConfigurations();
+
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         myUserId = pref.getString("token", null);
@@ -51,6 +47,28 @@ public class ProfileActivity extends AppCompatActivity {
         startFirebaseConfigurations();
         gettingMyData();
     }
+
+    /** Binding views from xml file */
+
+    public void bindViews(){
+        thumbProfileImage = findViewById(R.id.iv_thumb);
+        profileTextView = findViewById(R.id.tv_status_profile);
+        usernameProfileText = findViewById(R.id.tv_username_profile);
+        toolbar = findViewById(R.id.main_activity_profile_toolbar);
+    }
+
+    /** Toolbar configuration */
+
+    public void toolbarConfigurations(){
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null ){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
+
+
 
     private void startFirebaseConfigurations() {
         FirebaseApp.initializeApp(this);
@@ -74,17 +92,17 @@ public class ProfileActivity extends AppCompatActivity {
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                            String  myUsername = childDataSnapshot.child("username").getValue().toString();
                             String  urlProfile = childDataSnapshot.child("urlProfile").getValue().toString();
-                            tv_username_profile.setText(myUsername);
-                            Utils.fetchSvg(ProfileActivity.this, urlProfile, iv_thumb);
-                            /**
+                            usernameProfileText.setText(myUsername);
+                            //Utils.fetchSvg(ProfileActivity.this, urlProfile, thumbProfileImage);
+
                             Picasso.get()
                                     .load(urlProfile)
                                     .resize(500,500)
                                     .centerCrop()
-                                    .placeholder(R.drawable.waiting)
-                                    .into(iv_thumb);
+                                    .placeholder(R.drawable.asset_waiting)
+                                    .into(thumbProfileImage);
 
-                             */
+
                         }
                     }
                     @Override

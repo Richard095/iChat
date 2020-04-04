@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".activities.ContactsActivity">
 
 
@@ -33,10 +34,32 @@
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/main_activity_contacts_toolbar"
-        android:padding="5dp"/>
+        android:layout_below="@+id/main_activity_contacts_toolbar"/>
 
 
+    <TextView
+        android:id="@+id/tv_default_nocontacts_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/iv_image_no_contacts"
+        android:text="¡Ni un contacto aun, envia una invitación a un amigo ahora!"
+        android:fontFamily="sans-serif"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:textStyle="bold"/>
+
+
+
+
+    <ImageView
+        android:id="@+id/iv_image_no_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:src="@drawable/asset_nocontacts"/>
 
 
 

@@ -51,7 +51,7 @@
             android:layout_height="match_parent"
             android:hint="Escribe algo..."
             android:layout_weight="5"
-            android:background="@drawable/chat_input_design"
+            android:background="@drawable/message_input_bg"
             android:layout_margin="5dp"
             android:paddingLeft="10dp"/>
 

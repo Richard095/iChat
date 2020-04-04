@@ -6,16 +6,10 @@ public class Conversation {
     private String urlImage;
     private String messageType; //TEXT || IMAGE
     private String conversationId;
+    private String senderId;
+    private boolean read;
 
     public Conversation(){}
-
-    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId) {
-        this.message = message;
-        this.created_At = created_At;
-        this.urlImage = urlImage;
-        this.messageType = messageType;
-        this.conversationId = conversationId;
-    }
 
     public String getMessage() {
         return message;
@@ -55,5 +49,31 @@ public class Conversation {
 
     public void setConversationId(String conversationId) {
         this.conversationId = conversationId;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
+
+    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId, String senderId, boolean read) {
+        this.message = message;
+        this.created_At = created_At;
+        this.urlImage = urlImage;
+        this.messageType = messageType;
+        this.conversationId = conversationId;
+        this.senderId = senderId;
+        this.read = read;
     }
 }

@@ -9,6 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,27 +35,27 @@ public class ContactsActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     ContactsAdapter contactsAdapter;
 
+    TextView defaultTextNoContact;
+    ImageView defaultImageNoContacts;
+
     ArrayList<Contact> contactsList = new  ArrayList<>();
     ArrayList<Invitation> tempContactList = new ArrayList<>();
     String  myUserId;
-
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-        contactListRecyclerview = findViewById(R.id.contact_list_recyclerview);
+
+        bindViews();
+
         linearLayoutManager = new LinearLayoutManager(this);
         contactListRecyclerview.setLayoutManager(linearLayoutManager);
         contactsAdapter = new ContactsAdapter(ContactsActivity.this,contactsList);
 
-        Toolbar toolbar = findViewById(R.id.main_activity_contacts_toolbar);
 
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null ){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        toolbarConfigurations();
+
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
         myUserId  = pref.getString("token", null);
@@ -65,7 +70,28 @@ public class ContactsActivity extends AppCompatActivity {
         startFirebaseConfigurations();
         fetchMyContacts();
 
+
+
     }
+
+
+    public void bindViews(){
+        contactListRecyclerview = findViewById(R.id.contact_list_recyclerview);
+        toolbar = findViewById(R.id.main_activity_contacts_toolbar);
+        defaultTextNoContact = findViewById(R.id.tv_default_nocontacts_text);
+        defaultImageNoContacts = findViewById(R.id.iv_image_no_contacts);
+    }
+
+    public void toolbarConfigurations(){
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null ){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
+
 
 
     @Override
@@ -146,6 +172,10 @@ public class ContactsActivity extends AppCompatActivity {
                             getDataForEachContact(invitation.getUserId());
                             CheckIfExistConversationOnContact(invitation.getUserId());
                         }
+
+
+
+
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -171,8 +201,16 @@ public class ContactsActivity extends AppCompatActivity {
                             String profileUrl = childDataSnapshot.child("urlProfile").getValue().toString();
                             contactsList.add(new Contact(username, username, email, userId, profileUrl, "Online", ""));
                         }
-                        contactListRecyclerview.setAdapter(contactsAdapter);
+                        if (contactsList.size() == 0){
+                            Toast.makeText(ContactsActivity.this, "O CONt", Toast.LENGTH_SHORT).show();
+                            defaultTextNoContact.setVisibility(View.VISIBLE);
+                            defaultImageNoContacts.setVisibility(View.VISIBLE);
+                        }else {
+                            defaultTextNoContact.setVisibility(View.GONE);
+                            defaultImageNoContacts.setVisibility(View.GONE);
+                        }
 
+                        contactListRecyclerview.setAdapter(contactsAdapter);
 
                     }
                     @Override

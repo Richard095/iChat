@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/chat_input_design">
+    android:background="@drawable/invitation_box_item_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,11 +19,13 @@
         <TextView
             android:id="@+id/tv_username_invitation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Ricardo Ramirez"
             android:layout_weight="2"
-            android:textSize="18sp"
-            android:textColor="#000"/>
+            android:textSize="16sp"
+            android:textColor="#000"
+            android:singleLine="false"
+            android:padding="2dp"/>
 
 
 
@@ -33,9 +35,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="Aceptar"
-            android:background="#f50057"
+            android:background="@drawable/invitation_button_bg"
             android:textStyle="normal"
             android:textColor="#fff"
+            android:textAllCaps="false"
             android:foreground="?attr/selectableItemBackgroundBorderless"/>
 
         <ImageView
@@ -45,7 +48,7 @@
             android:src="@drawable/ic_delete_forever_black_24dp"
             android:layout_weight="3"
             android:layout_gravity="center"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="false"/>
 
     </LinearLayout>
 

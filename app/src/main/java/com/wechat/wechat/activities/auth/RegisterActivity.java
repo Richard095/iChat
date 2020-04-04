@@ -1,9 +1,7 @@
-package com.wechat.wechat.activities;
+package com.wechat.wechat.activities.auth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,43 +20,38 @@ import com.wechat.wechat.helpers.EncriptHelper;
 import com.wechat.wechat.helpers.RandomAvatarHelper;
 import com.wechat.wechat.helpers.ValidationHelper;
 import com.wechat.wechat.models.User;
-
 import java.util.UUID;
 
-
 public class RegisterActivity extends AppCompatActivity {
+
 
     TextInputEditText fullnameInput;
     TextInputEditText emailInput;
     TextInputEditText passwordInput;
-    TextView cancel, save;
+
+    TextView cancelTextView, saveTextView;
     ProgressBar progressBar;
     LinearLayout linearLayoutContainerForm;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        cancel = findViewById(R.id.tv_cancel);
-        save = findViewById(R.id.tv_save);
-        fullnameInput = findViewById(R.id.tie_fullname);
-        emailInput = findViewById(R.id.tie_email);
-        passwordInput = findViewById(R.id.tie_password);
-        progressBar = findViewById(R.id.pb_progressbar);
-        linearLayoutContainerForm = findViewById(R.id.container_form);
+        bindViews();
+
         startFirebaseConfigurations();
 
-        cancel.setOnClickListener(new View.OnClickListener() {
+        cancelTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
 
-        save.setOnClickListener(new View.OnClickListener() {
+        saveTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createNewUser();
@@ -68,13 +61,23 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    public void bindViews(){
+        cancelTextView = findViewById(R.id.tv_cancel);
+        saveTextView = findViewById(R.id.tv_save);
+        fullnameInput = findViewById(R.id.tie_fullname);
+        emailInput = findViewById(R.id.tie_email);
+        passwordInput = findViewById(R.id.tie_password);
+        progressBar = findViewById(R.id.pb_progressbar);
+        linearLayoutContainerForm = findViewById(R.id.container_form);
+    }
+
     private void startFirebaseConfigurations() {
         FirebaseApp.initializeApp(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
     }
 
-    /**Create and Saving new user */
+    /**Create and Saving new asset_user */
 
     public void  createNewUser(){
 
@@ -82,8 +85,9 @@ public class RegisterActivity extends AppCompatActivity {
                 || !passwordInput.getText().toString().isEmpty()
                 || !emailInput.getText().toString().isEmpty()
         ){
-            String password = passwordInput.getText().toString();
+
             try {
+                String password = passwordInput.getText().toString();
 
                 if (ValidationHelper.validateEmail(emailInput)){
                     String fullname = fullnameInput.getText().toString();
@@ -99,15 +103,16 @@ public class RegisterActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(this, "El correo no es valido", Toast.LENGTH_SHORT).show();
                 }
-            }catch (Exception exe){ System.out.println(exe); }
-        }else{ Toast.makeText(this, "Todo los campos son obligatorios.", Toast.LENGTH_SHORT).show(); }
 
+            }catch (Exception e){ e.printStackTrace(); }
+        }else{ Toast.makeText(this, "Todo los campos son obligatorios.", Toast.LENGTH_SHORT).show(); }
 
     }
 
     public void saveUser(final String userId, final User user, final String pass){
         linearLayoutContainerForm.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+
         databaseReference.child("User").child(userId).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -118,6 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
                         resultIntent.putExtra("password", pass);
                         resultIntent.putExtra("email", user.getEmail());
                         setResult(RESULT_OK, resultIntent);
+
                         finish();
                     }
                 })

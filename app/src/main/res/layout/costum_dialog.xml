@@ -21,8 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/email"
-        android:background="#eceff1"
+        android:background="@drawable/invitation_box_item_bg"
         android:enabled="true"
+        android:padding="2dp"
         android:layout_margin="5dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -30,7 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:layout_marginBottom="0dp"/>
+            android:layout_marginBottom="0dp"
+            />
 
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,15 +43,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Enviar invitación"
-        android:background="#f50057"
+        android:background="@drawable/invitation_button_bg"
         android:textColor="#ffffff"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:layout_below="@+id/password"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
         android:clickable="true"
-        style="?android:attr/borderlessButtonStyle"
-        />
+        android:textAllCaps="false"
+        style="?android:attr/borderlessButtonStyle"/>
 
 
 </LinearLayout>

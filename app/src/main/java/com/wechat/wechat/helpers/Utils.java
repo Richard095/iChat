@@ -1,15 +1,12 @@
-package com.wechat.wechat.adapters;
+package com.wechat.wechat.helpers;
 
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.pixplicity.sharp.Sharp;
-import com.wechat.wechat.R;
-
 import java.io.IOException;
 import java.io.InputStream;
-
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;

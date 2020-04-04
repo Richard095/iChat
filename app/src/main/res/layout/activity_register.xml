@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context=".activities.RegisterActivity">
+    tools:context=".activities.auth.RegisterActivity">
 
     <ProgressBar
         android:id="@+id/pb_progressbar"
@@ -55,7 +55,7 @@
             android:id="@+id/iv_register_presentation"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/chatapp"
+            android:src="@drawable/asset_chatapp"
             android:adjustViewBounds="true"
             android:layout_margin="18dp"
             android:layout_gravity="center"

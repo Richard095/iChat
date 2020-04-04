@@ -48,7 +48,7 @@
             android:id="@+id/iv_thumb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/waiting"
+            android:src="@drawable/asset_waiting"
             android:layout_centerHorizontal="true"
             android:textAlignment="center"/>
 
@@ -91,7 +91,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/buttonstyle"
+        android:background="@drawable/login_button_normal"
         android:text="Editar Perfil"
         android:layout_below="@+id/tv_username_profile"
         android:textColor="#fff"

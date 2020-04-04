@@ -2,7 +2,6 @@ package com.wechat.wechat.adapters;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +32,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     }
 
 
-
-
-
     public ContactsAdapter(Context context, ArrayList<Contact> contactsList) {
         this.context = context;
         this.contactsList = contactsList;
@@ -44,7 +40,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     @NonNull
     @Override
     public ContactsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-
         View view  = LayoutInflater.from(context).inflate(R.layout.contact_list_item, viewGroup, false);
         return new ViewHolder(view);
     }
@@ -56,7 +51,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                 .load(contact.getProfileUrl())
                 .resize(70,70)
                 .centerCrop()
-                .into(viewHolder.imageprofile);
+                .placeholder(R.drawable.asset_user)
+                .into(viewHolder.imageProfile);
+
         viewHolder.fullname.setText(contact.getFullname());
         viewHolder.status.setText(contact.getStatus());
 
@@ -75,14 +72,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         return contactsList.size();
     }
 
-
     class ViewHolder extends RecyclerView.ViewHolder{
-        private ImageView imageprofile;
+        private ImageView imageProfile;
         private TextView fullname, status;
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imageprofile = itemView.findViewById(R.id.img_profile);
+            imageProfile = itemView.findViewById(R.id.img_profile);
             fullname = itemView.findViewById(R.id.tv_fullname);
             status = itemView.findViewById(R.id.tv_status);
         }

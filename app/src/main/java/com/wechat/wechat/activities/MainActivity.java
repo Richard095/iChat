@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     ChatAdapter chatAdapter;
     Toolbar toolbar;
-
+    ImageView imageDefault;
+    TextView defaultText;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     ArrayList<Chat> chatList = new  ArrayList<>();
@@ -44,20 +47,19 @@ public class MainActivity extends AppCompatActivity {
     private  String nameContact="", usernameId="", urlProfile="";
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        contactsButton = findViewById(R.id.button_contacts_id);
-        chatListRecycler = findViewById(R.id.chats_recyclerview_id);
-        toolbar = findViewById(R.id.main_activity_toolbar);
+        bindViews();
+
         setSupportActionBar(toolbar);
 
         linearLayoutManager = new LinearLayoutManager(this);
         chatListRecycler.setLayoutManager(linearLayoutManager);
         chatAdapter = new ChatAdapter(this,chatList);
+
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         myUserId  = pref.getString("token", null);
@@ -83,8 +85,19 @@ public class MainActivity extends AppCompatActivity {
                 openContacts();
             }
         });
+
+
+
     }
 
+
+    public  void bindViews(){
+        contactsButton = findViewById(R.id.button_contacts_id);
+        chatListRecycler = findViewById(R.id.chats_recyclerview_id);
+        toolbar = findViewById(R.id.main_activity_toolbar);
+        imageDefault = findViewById(R.id.image_default);
+        defaultText = findViewById(R.id.tv_default_text);
+    }
 
 
     private void startFirebaseConfiguration() {
@@ -127,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /** Fetching all conversations*/
+
     public void fetchMyConversations() {
         if (myUserId != null) {
             databaseReference.child("User").child(myUserId).child("Conversations").addValueEventListener(new ValueEventListener() {
@@ -150,8 +165,18 @@ public class MainActivity extends AppCompatActivity {
 
                             chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
                                                    "5:49 PM", urlProfile,
-                                                   chats.getUserIdDOS(), chats.getConversationId())); }
+                                                   chats.getUserIdDOS(), chats.getConversationId()));
+                        }
                     }
+
+                    if (chatList.size() == 0){
+                        imageDefault.setVisibility(View.VISIBLE);
+                        defaultText.setVisibility(View.VISIBLE);
+                    }else{
+                        imageDefault.setVisibility(View.GONE);
+                        defaultText.setVisibility(View.GONE);
+                    }
+
                     chatListRecycler.setAdapter(chatAdapter);
                 }
 
@@ -163,6 +188,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 
 }
