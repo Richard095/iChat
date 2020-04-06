@@ -46,6 +46,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -69,7 +72,7 @@ public class ChatingActivity extends AppCompatActivity {
     ArrayList<Conversation> conversationList = new  ArrayList<>();
 
     String myUserId, contactUserId, contactUsername,conversationId, contactUrlProfile;
-    String typeMessage, imageUniqueId, message = "";
+    String typeMessage, imageUniqueId, tempMessage = "";
 
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -171,9 +174,12 @@ public class ChatingActivity extends AppCompatActivity {
         }
     }
 
+
+
     public void StartConversationWithMyContact(){
-        DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         final String createdAt = df.format(Calendar.getInstance().getTime());
+
         if (conversationId.equals("")){
             String uniqueID = UUID.randomUUID().toString();
             conversationId = uniqueID;
@@ -184,6 +190,7 @@ public class ChatingActivity extends AppCompatActivity {
             sendMessage(conversationId);
         }
     }
+
 
 
     public void saveConversation(final String username, final String message, final String createdAt,  final String secondUserId, final String conversationId){
@@ -198,10 +205,12 @@ public class ChatingActivity extends AppCompatActivity {
                 });
     }
 
+    /** Saving conversation for each user  MyUser &&* MyUserContact */
 
     public void saveMyContactsWithChatActive(final String conversationId){
-        DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         final String createdAt = df.format(Calendar.getInstance().getTime());
+
             databaseReference.child("User").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -210,16 +219,9 @@ public class ChatingActivity extends AppCompatActivity {
                         if (user != null) {
                             if (myUserId != null){
                                 if (myUserId.equals(user.getUserId())){
-                                    Chats chats = new Chats(
-                                            message,
-                                            createdAt,
-                                            conversationId,
-                                            myUserId,
-                                            contactUserId,
-                                            user.getFullname(),
-                                            contactUsername,
-                                            user.getUrlProfile(),
-                                            contactUrlProfile);
+
+                                    Chats chats = new Chats( tempMessage, createdAt, conversationId, myUserId, contactUserId, user.getFullname(), contactUsername, user.getUrlProfile(), contactUrlProfile);
+
                                     databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).setValue(chats);
                                     databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).setValue(chats);
 
@@ -236,32 +238,55 @@ public class ChatingActivity extends AppCompatActivity {
     }
 
 
+    /** Sending message Type TEXT || IMAGE */
+
     public void sendMessage(final String conversationId){
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US); //iT WAS CHANGED
         String createdAt = df.format(Calendar.getInstance().getTime());
-        message = typingInput.getText().toString();
+        tempMessage = typingInput.getText().toString();
+        String message = typingInput.getText().toString();
+        typingInput.setText("");
 
         if (typeMessage.equals("TEXT")){
+
             Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false);
+
             String uniqueID = UUID.randomUUID().toString();
+
             databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
+
             databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
+            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+
             databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            typingInput.setText("");
+            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
 
 
-        }else{
-            Conversation conversation = new Conversation(message, createdAt, uriImage.toString(),typeMessage,conversationId, myUserId, false);
+        }else if(typeMessage.equals("IMAGE")){
+            Conversation conversation = new Conversation(typingInput.getText().toString(), createdAt, uriImage.toString(),typeMessage,conversationId, myUserId, false);
             String uniqueID = UUID.randomUUID().toString();
             imageUniqueId = uniqueID;
+
             databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
+
+
+
+
             databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
+            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+
             databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            typingInput.setText("");
+            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
 
         }
 
+
+
     }
+
+
+    /** Getting all messages from chat */
 
     public void getMessages(){
 
@@ -276,7 +301,8 @@ public class ChatingActivity extends AppCompatActivity {
                 MessageHelper.orderMessagesList(conversationList);
 
                 messagesRecyclerview.setAdapter(conversationAdapter);
-                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount()-1);
+                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount());
+
                 MessageHelper.modifyCreatedAtToFormat(conversationList);
             }
             @Override
@@ -300,9 +326,11 @@ public class ChatingActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             uriImage  = data.getData();
             try {
+
                  bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImage);
                  StartConversationWithMyContact();
                  uploadImage();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -341,10 +369,19 @@ public class ChatingActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
+
                     if (downloadUri != null){
-                        databaseReference.child("Conversations").child(conversationId).child("Messages").child(imageUniqueId).child("urlImage").setValue(downloadUri.toString());
+
+                           databaseReference.child("Conversations")
+                                            .child(conversationId)
+                                            .child("Messages")
+                                            .child(imageUniqueId)
+                                            .child("urlImage")
+                                            .setValue(downloadUri.toString());
+
                         imageUniqueId ="";
                     }
+
                 } else {
                     Toast.makeText(ChatingActivity.this, "Hubo un problema con la descarga.", Toast.LENGTH_SHORT).show();
                 }
@@ -352,6 +389,8 @@ public class ChatingActivity extends AppCompatActivity {
         });
 
     }
+
+
 
 
 }

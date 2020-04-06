@@ -39,17 +39,36 @@
                 android:id="@+id/tv_fullname_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ricardo Ramirez Mendez"
+                android:text="Any user name"
                 android:textColor="#000"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/tv_message_preview_chat"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="Hola como has estado!! Hola como has estado!! Hola como has estado!!"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tv_message_preview_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:layout_weight="1"
+                    android:text="Any message text preview"/>
+
+                <TextView
+                    android:id="@+id/tv_message_preview_createdAt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:layout_weight="3"
+                    android:paddingLeft="5dp"
+                    android:textAlignment="center"
+                    android:text="00:00 AM | PM"/>
+
+
+
+            </LinearLayout>
 
             <View android:background="#f2f2f2"
                 android:layout_marginTop="10dp"

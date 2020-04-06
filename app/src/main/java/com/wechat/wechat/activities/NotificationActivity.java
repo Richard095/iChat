@@ -24,6 +24,8 @@ import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -44,7 +46,7 @@ public class NotificationActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     String myUserId, someoneId, myUsername;
     ArrayList<Invitation> invitationList = new ArrayList<>();
-
+    ArrayList<Invitation> myContactList = new ArrayList<>();
     ImageView defaultImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public class NotificationActivity extends AppCompatActivity {
         startFirebaseConfiguration();
         gettingMyData();
         getMyInvitations();
+
+        fetchMyContacts(); //For not have user duplicates
 
     }
 
@@ -163,6 +167,7 @@ public class NotificationActivity extends AppCompatActivity {
     public void sendInvitation(final EditText editText, final Button sendInvitation) {
 
         Invitation invitation = new Invitation(myUsername, myUserId);
+        sendInvitation.setText("Enviando...");
         if (someoneId != null) {
             databaseReference.child("User").child(someoneId).child("Invitations").child(myUserId).setValue(invitation)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -170,6 +175,7 @@ public class NotificationActivity extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(NotificationActivity.this, "Invitación enviada", Toast.LENGTH_SHORT).show();
                             sendInvitation.setEnabled(false);
+                            sendInvitation.setText("Enviar invitación");
                             editText.setText("");
                             someoneId = "";
                         }
@@ -188,14 +194,37 @@ public class NotificationActivity extends AppCompatActivity {
     /** Search somebody for send  to invitation */
 
     public void searchFriendAndSendInvitation(String email, final EditText editText, final Button sendInvitation) {
+
+
         databaseReference.child("User")
                 .orderByChild("email").equalTo(email)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            someoneId = childDataSnapshot.child("userId").getValue().toString();
-                            sendInvitation(editText, sendInvitation);
+
+
+
+                        if (dataSnapshot.getValue() == null){
+                            Toast.makeText(NotificationActivity.this, "No hay ningun usuario asociado a este correo", Toast.LENGTH_LONG).show();
+                        }else{
+
+                            for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                                someoneId = childDataSnapshot.child("userId").getValue().toString();
+                                if (someoneId.equals(myUserId)){
+                                    Toast.makeText(NotificationActivity.this, "No te puedes enviar invitacion a ti mismo", Toast.LENGTH_LONG).show();
+                                }else{
+                                    for (Invitation listContacts: myContactList){
+                                        if (listContacts.getUserId().equals(someoneId)){
+                                            Toast.makeText(NotificationActivity.this, getString(R.string.contact_existent_message), Toast.LENGTH_LONG).show();
+                                            break;
+                                        }
+                                        if (!listContacts.getUserId().equals(someoneId)){
+                                            sendInvitation(editText, sendInvitation);
+                                        }
+                                    }
+                                }
+
+                            }
                         }
                     }
                     @Override
@@ -203,6 +232,8 @@ public class NotificationActivity extends AppCompatActivity {
 
                     }
                 });
+
+
     }
 
 
@@ -289,6 +320,29 @@ public class NotificationActivity extends AppCompatActivity {
                         //Toast.makeText(NotificationActivity.this, "Invitation deleted", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+
+    /** Checking if the my contacts*/
+    public void fetchMyContacts(){
+        databaseReference.child("User").child(myUserId).child("Contacts")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        myContactList.clear();
+
+                        for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                            Invitation invitation = objDataSnapshot.getValue(Invitation.class);
+                            myContactList.add(invitation);
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
     }
 
 }

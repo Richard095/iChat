@@ -131,6 +131,7 @@ public class ContactsActivity extends AppCompatActivity {
                 databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                         for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
                             Chat chat = objDataSnapshot.getValue(Chat.class);
                             if (chat != null) {
@@ -145,6 +146,7 @@ public class ContactsActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                        contactListRecyclerview.setAdapter(contactsAdapter);
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -168,14 +170,11 @@ public class ContactsActivity extends AppCompatActivity {
                             Invitation invitation = objDataSnapshot.getValue(Invitation.class);
                             tempContactList.add(invitation);
                         }
+
                         for ( Invitation invitation : tempContactList ){
                             getDataForEachContact(invitation.getUserId());
                             CheckIfExistConversationOnContact(invitation.getUserId());
                         }
-
-
-
-
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -210,7 +209,7 @@ public class ContactsActivity extends AppCompatActivity {
                             defaultImageNoContacts.setVisibility(View.GONE);
                         }
 
-                        contactListRecyclerview.setAdapter(contactsAdapter);
+                        //contactListRecyclerview.setAdapter(contactsAdapter);
 
                     }
                     @Override

@@ -7,5 +7,6 @@
     <string name="iniciando_sesion">Iniciando sesión...</string>
     <string name="password">Password</string>
     <string name="iniciar_sesi_n">Iniciar sesión</string>
+    <string name="contact_existent_message">Este usuario ya existe en tu lista de contactos</string>
 
 </resources>

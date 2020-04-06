@@ -16,7 +16,6 @@ public class Chat {
         this.message = message;
         this.created_At = created_At;
         this.urlProfile = urlProfile;
-
         this.secondUserId = secondUserId;
         this.conversationId = conversationId;
     }

@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,10 +24,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.ChatAdapter;
 import com.wechat.wechat.helpers.ConverterHelper;
+import com.wechat.wechat.helpers.MessageHelper;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
 import com.wechat.wechat.models.Invitation;
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     ChatAdapter chatAdapter;
     Toolbar toolbar;
-    ImageView imageDefault;
+    ImageView defaultImage;
     TextView defaultText;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -94,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
 
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         contactsButton = findViewById(R.id.button_contacts_id);
         chatListRecycler = findViewById(R.id.chats_recyclerview_id);
         toolbar = findViewById(R.id.main_activity_toolbar);
-        imageDefault = findViewById(R.id.image_default);
+        defaultImage = findViewById(R.id.image_default);
         defaultText = findViewById(R.id.tv_default_text);
     }
 
@@ -112,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -161,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
                     chatList.clear();
                     for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
                         Chats chats = objDataSnapshot.getValue(Chats.class);
-
                         if (chats != null) {
                             if (myUserId.equals(chats.getUserIdDOS())) {
                                 usernameId = chats.getUserIdUno();
@@ -174,19 +177,27 @@ public class MainActivity extends AppCompatActivity {
                                 urlProfile = chats.getProfileUrlDos();
                             }
 
+                            //chatList.add(new Chat("username","message","createdAt","urlProfile","secondUserId","conversationId"));
                             chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
-                                                   "5:49 PM", urlProfile,
+                                                   chats.getPreviewLastChatCreatedAt(), urlProfile,
                                                    chats.getUserIdDOS(), chats.getConversationId()));
+                            MessageHelper.modifyCreatedAtToFormatOnChat(chatList);
+
                         }
                     }
 
                     if (chatList.size() == 0){
-                        imageDefault.setVisibility(View.VISIBLE);
+                        defaultImage.setVisibility(View.VISIBLE);
                         defaultText.setVisibility(View.VISIBLE);
                     }else{
-                        imageDefault.setVisibility(View.GONE);
+                        defaultImage.setVisibility(View.GONE);
                         defaultText.setVisibility(View.GONE);
                     }
+
+
+
+
+
 
                     chatListRecycler.setAdapter(chatAdapter);
                 }
@@ -222,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
 
 

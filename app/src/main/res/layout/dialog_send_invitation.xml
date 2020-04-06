@@ -46,10 +46,8 @@
         android:background="@drawable/invitation_button_bg"
         android:textColor="#ffffff"
         android:layout_margin="5dp"
-        android:layout_below="@+id/password"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:clickable="true"
         android:textAllCaps="false"
         style="?android:attr/borderlessButtonStyle"/>
 

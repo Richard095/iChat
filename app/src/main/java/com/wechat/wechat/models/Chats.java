@@ -1,5 +1,8 @@
 package com.wechat.wechat.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+@IgnoreExtraProperties
 public class Chats {
     private String previewLastMessage;
     private String previewLastChatCreatedAt;

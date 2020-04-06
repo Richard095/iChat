@@ -59,7 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
         viewHolder.fullname.setText(chat.getUsername());
         viewHolder.messagePreviewText.setText(chat.getMessage());
-
+        viewHolder.createdAtPreview.setText(chat.getCreated_At());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,12 +77,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView imageProfile;
-        private TextView fullname, messagePreviewText;
+        private TextView fullname, messagePreviewText, createdAtPreview;
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageProfile = itemView.findViewById(R.id.img_profile_chat);
             fullname = itemView.findViewById(R.id.tv_fullname_chat);
             messagePreviewText = itemView.findViewById(R.id.tv_message_preview_chat);
+            createdAtPreview = itemView.findViewById(R.id.tv_message_preview_createdAt);
         }
     }
 }
