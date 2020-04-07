@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private  String nameContact="", usernameId="", urlProfile="";
     ArrayList<Invitation> invitationList = new ArrayList<>();
 
-    private static int cart_count=0;
-    private Menu mMenu;
+    private static int  invitationCount=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.chat_menu, menu);
         MenuItem notificationItem = menu.findItem(R.id.action_notification);
 
-        notificationItem.setIcon(ConverterHelper.convertLayoutToImage(MainActivity.this,cart_count,R.drawable.ic_notifications_active_black_24dp));
+        notificationItem.setIcon(ConverterHelper.convertLayoutToImage(MainActivity.this,invitationCount,R.drawable.ic_notifications_active_black_24dp));
 
         MenuItem profile = menu.findItem(R.id.action_acount);
 
@@ -130,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 return false;
             }
@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 return false;
             }
@@ -148,10 +149,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     public void openContacts(){
         Intent intent = new Intent(this, ContactsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
@@ -196,9 +196,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
                     chatListRecycler.setAdapter(chatAdapter);
                 }
 
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                             Invitation invitation = objDataSnapshot.getValue(Invitation.class);
                             invitationList.add(invitation);
                         }
-                        cart_count = invitationList.size();
+                        invitationCount = invitationList.size();
                         invalidateOptionsMenu();
                     }
                     @Override

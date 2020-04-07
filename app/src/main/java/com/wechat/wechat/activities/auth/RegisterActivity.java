@@ -100,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
                     String randomImageUrl = RandomAvatarHelper.getRandomAvatarUrl();
 
 
-                    User user = new User(fullname,email,userId,randomImageUrl,fullname,passwordEncripted);
+                    User user = new User(fullname,email,userId,randomImageUrl,fullname,passwordEncripted, "Online");
                     saveUser(userId,user,password);
                 }else{
                     Toast.makeText(this, "El correo no es valido", Toast.LENGTH_SHORT).show();

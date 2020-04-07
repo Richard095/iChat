@@ -198,7 +198,9 @@ public class ContactsActivity extends AppCompatActivity {
                             String email = childDataSnapshot.child("email").getValue().toString();
                             String userId = childDataSnapshot.child("userId").getValue().toString();
                             String profileUrl = childDataSnapshot.child("urlProfile").getValue().toString();
-                            contactsList.add(new Contact(username, username, email, userId, profileUrl, "Online", ""));
+                            String description = childDataSnapshot.child("description").getValue().toString();
+
+                            contactsList.add(new Contact(username, username, email, userId, profileUrl, description, ""));
                         }
                         if (contactsList.size() == 0){
                             Toast.makeText(ContactsActivity.this, "O CONt", Toast.LENGTH_SHORT).show();

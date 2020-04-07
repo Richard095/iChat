@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,8 +92,10 @@ public class ChatingActivity extends AppCompatActivity {
 
         linearLayoutManager = new LinearLayoutManager(ChatingActivity.this);
         linearLayoutManager.setReverseLayout(true);
+
+        conversationAdapter = new ConversationAdapter(ChatingActivity.this,conversationList);
         messagesRecyclerview.setLayoutManager(linearLayoutManager);
-        conversationAdapter = new ConversationAdapter(this,conversationList);
+
 
         gettingExtrasFromParentActivity();
 
@@ -127,6 +131,11 @@ public class ChatingActivity extends AppCompatActivity {
         contactUsername = getIntent().getStringExtra("username");
         conversationId = getIntent().getStringExtra("conversationId");
         contactUrlProfile = getIntent().getStringExtra("contactUrlProfile");
+
+        Log.d("EXTRAS", contactUserId+ " MyContactUserId"  );
+        Log.d("EXTRAS", contactUsername+" MyContactUserName" );
+        Log.d("EXTRAS", conversationId+" <=== conversationId "  );
+        Log.d("EXTRAS", contactUrlProfile+" URLPROFILE" );
     }
 
 
@@ -136,7 +145,9 @@ public class ChatingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 typeMessage = "TEXT";
-                if (!typingInput.getText().toString().isEmpty()) StartConversationWithMyContact();
+                if (!typingInput.getText().toString().isEmpty()) {
+                    StartConversationWithMyContact();
+                }
             }
         });
 
@@ -176,19 +187,21 @@ public class ChatingActivity extends AppCompatActivity {
 
 
 
+
+
     public void StartConversationWithMyContact(){
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         final String createdAt = df.format(Calendar.getInstance().getTime());
 
         if (conversationId.equals("")){
-            String uniqueID = UUID.randomUUID().toString();
-            conversationId = uniqueID;
-            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt, contactUserId, uniqueID );
+            conversationId =  UUID.randomUUID().toString();
+            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt, contactUserId, conversationId);
             getMessages();
-
         }else{
             sendMessage(conversationId);
         }
+
+
     }
 
 
@@ -223,6 +236,7 @@ public class ChatingActivity extends AppCompatActivity {
                                     Chats chats = new Chats( tempMessage, createdAt, conversationId, myUserId, contactUserId, user.getFullname(), contactUsername, user.getUrlProfile(), contactUrlProfile);
 
                                     databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).setValue(chats);
+
                                     databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).setValue(chats);
 
                                 }
@@ -243,9 +257,9 @@ public class ChatingActivity extends AppCompatActivity {
     public void sendMessage(final String conversationId){
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US); //iT WAS CHANGED
-        String createdAt = df.format(Calendar.getInstance().getTime());
+        final String createdAt = df.format(Calendar.getInstance().getTime());
         tempMessage = typingInput.getText().toString();
-        String message = typingInput.getText().toString();
+        final String message = typingInput.getText().toString();
         typingInput.setText("");
 
         if (typeMessage.equals("TEXT")){
@@ -253,14 +267,16 @@ public class ChatingActivity extends AppCompatActivity {
             Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false);
 
             String uniqueID = UUID.randomUUID().toString();
-
-            databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
-
-            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
-
-            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+            databaseReference.child("Conversations")
+                    .child(conversationId)
+                    .child("Messages")
+                    .child(uniqueID)
+                    .setValue(conversation).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    updateConversation(message, createdAt);
+                }
+            });
 
 
         }else if(typeMessage.equals("IMAGE")){
@@ -268,16 +284,19 @@ public class ChatingActivity extends AppCompatActivity {
             String uniqueID = UUID.randomUUID().toString();
             imageUniqueId = uniqueID;
 
-            databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
+            databaseReference
+                    .child("Conversations")
+                    .child(conversationId)
+                    .child("Messages")
+                    .child(uniqueID)
+                    .setValue(conversation).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    updateConversation(message, createdAt);
+                }
+            });
 
 
-
-
-            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
-
-            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-            databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
 
         }
 
@@ -290,17 +309,23 @@ public class ChatingActivity extends AppCompatActivity {
 
     public void getMessages(){
 
-        databaseReference.child("Conversations").child(conversationId).child("Messages").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("Conversations")
+                .child(conversationId)
+                .child("Messages")
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 conversationList.clear();
+                //Toast.makeText(ChatingActivity.this, "Nuevo mensaje", Toast.LENGTH_SHORT).show();
                 for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
                     Conversation conversation = objDataSnapshot.getValue(Conversation.class);
                     conversationList.add(conversation);
                 }
+
                 MessageHelper.orderMessagesList(conversationList);
 
                 messagesRecyclerview.setAdapter(conversationAdapter);
+
                 messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount());
 
                 MessageHelper.modifyCreatedAtToFormat(conversationList);
@@ -311,6 +336,14 @@ public class ChatingActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
+
+
+
+    /** Select and Upload image */
 
     public void chooseImageAndSend(){
         Intent intent = new Intent();
@@ -328,6 +361,7 @@ public class ChatingActivity extends AppCompatActivity {
             try {
 
                  bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImage);
+
                  StartConversationWithMyContact();
                  uploadImage();
 
@@ -388,9 +422,34 @@ public class ChatingActivity extends AppCompatActivity {
             }
         });
 
+
+
+
     }
 
 
+    public void updateConversation(String message, String createdAt){
 
+        Toast.makeText(this, "Updating on two users..", Toast.LENGTH_SHORT).show();
+
+
+        HashMap<String, Object> updateConversation = new HashMap<>();
+        updateConversation.put("previewLastMessage", message);
+        updateConversation.put("previewLastChatCreatedAt", createdAt);
+
+        databaseReference.child("User").child(myUserId).child("Conversa tions").child(conversationId)
+                .updateChildren(updateConversation);
+
+        databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId)
+                .updateChildren(updateConversation);
+
+
+        //databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
+        //databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+
+        //databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
+        //databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+
+    }
 
 }

@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="18dp">
 
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="normal"
-        android:text="@string/enviale_una_invitación_a_un_amigo_mediante_su_correo"
+        android:text="Cualquiera de tus contactos vera tu estado."
         android:padding="5dp"/>
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filledTextField"
+        android:id="@+id/filledTextField_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/email"
+        android:hint="Que estas pensando..."
         android:background="@drawable/invitation_box_item_bg"
         android:enabled="true"
         android:padding="2dp"
         android:layout_margin="5dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_send_Email"
+            android:id="@+id/et_update_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:layout_marginBottom="0dp"
-            />
+            android:layout_marginBottom="0dp"/>
 
 
     </com.google.android.material.textfield.TextInputLayout>
 
 
+
     <Button
-        android:id="@+id/notification_send_req_button_id"
+        android:id="@+id/btn_update_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enviar invitación"
+        android:text="Actualizar"
         android:background="@drawable/invitation_button_bg"
         android:textColor="#ffffff"
         android:layout_margin="5dp"
@@ -49,6 +47,7 @@
         android:paddingRight="32dp"
         android:textAllCaps="false"
         style="?android:attr/borderlessButtonStyle"/>
+
 
 
 </LinearLayout>

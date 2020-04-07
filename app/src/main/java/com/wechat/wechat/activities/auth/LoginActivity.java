@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     public  void savingUser(String loginMethod, String username, String email, String userId, String urlProfile, String fullname, String password){
         if (loginMethod.equals("GOOGLE")){
-            final User user = new User(username,email, userId, urlProfile, fullname, password);
+            final User user = new User(username,email, userId, urlProfile, fullname, password,"Online");
             databaseReference.child("User").child(user.getUserId()).setValue(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
