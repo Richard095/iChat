@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -83,19 +84,19 @@ public class ChatingActivity extends AppCompatActivity {
     Uri uriImage;
 
 
+    ValueEventListener messageListener=null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chating);
-
         bindViews();
 
         linearLayoutManager = new LinearLayoutManager(ChatingActivity.this);
         linearLayoutManager.setReverseLayout(true);
-
         conversationAdapter = new ConversationAdapter(ChatingActivity.this,conversationList);
         messagesRecyclerview.setLayoutManager(linearLayoutManager);
-
 
         gettingExtrasFromParentActivity();
 
@@ -110,10 +111,10 @@ public class ChatingActivity extends AppCompatActivity {
 
         startFirebaseConfigurations();
 
-
         getMessages();
 
     }
+
 
 
     public void bindViews(){
@@ -134,7 +135,7 @@ public class ChatingActivity extends AppCompatActivity {
 
         Log.d("EXTRAS", contactUserId+ " MyContactUserId"  );
         Log.d("EXTRAS", contactUsername+" MyContactUserName" );
-        Log.d("EXTRAS", conversationId+" <=== conversationId "  );
+        Log.d("EXTRAS", conversationId+"   << === conversationId "  );
         Log.d("EXTRAS", contactUrlProfile+" URLPROFILE" );
     }
 
@@ -151,6 +152,7 @@ public class ChatingActivity extends AppCompatActivity {
             }
         });
 
+
         imageSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,6 +160,7 @@ public class ChatingActivity extends AppCompatActivity {
                 chooseImageAndSend();
             }
         });
+
     }
 
 
@@ -187,8 +190,6 @@ public class ChatingActivity extends AppCompatActivity {
 
 
 
-
-
     public void StartConversationWithMyContact(){
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         final String createdAt = df.format(Calendar.getInstance().getTime());
@@ -204,10 +205,8 @@ public class ChatingActivity extends AppCompatActivity {
 
     }
 
-
-
     public void saveConversation(final String username, final String message, final String createdAt,  final String secondUserId, final String conversationId){
-        Chat chat = new Chat(username,message,createdAt,"", secondUserId, conversationId);
+        Chat chat = new Chat(username,message,createdAt,"", secondUserId, conversationId, 0);
         databaseReference.child("Conversations").child(conversationId).setValue(chat)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -256,17 +255,16 @@ public class ChatingActivity extends AppCompatActivity {
 
     public void sendMessage(final String conversationId){
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US); //iT WAS CHANGED
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         final String createdAt = df.format(Calendar.getInstance().getTime());
         tempMessage = typingInput.getText().toString();
         final String message = typingInput.getText().toString();
         typingInput.setText("");
 
         if (typeMessage.equals("TEXT")){
-
-            Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false);
-
             String uniqueID = UUID.randomUUID().toString();
+            Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false, uniqueID);
+
             databaseReference.child("Conversations")
                     .child(conversationId)
                     .child("Messages")
@@ -280,8 +278,9 @@ public class ChatingActivity extends AppCompatActivity {
 
 
         }else if(typeMessage.equals("IMAGE")){
-            Conversation conversation = new Conversation(typingInput.getText().toString(), createdAt, uriImage.toString(),typeMessage,conversationId, myUserId, false);
             String uniqueID = UUID.randomUUID().toString();
+            Conversation conversation = new Conversation(typingInput.getText().toString(), createdAt, uriImage.toString(),typeMessage,conversationId, myUserId, false,uniqueID);
+
             imageUniqueId = uniqueID;
 
             databaseReference
@@ -296,51 +295,61 @@ public class ChatingActivity extends AppCompatActivity {
                 }
             });
 
-
-
         }
 
-
-
     }
 
 
-    /** Getting all messages from chat */
+    /** Getting all messages from chat ==================>*/
 
-    public void getMessages(){
+    public void getMessages() {
+        if (conversationId != null) {
+               messageListener = databaseReference.child("Conversations")
+                        .child(conversationId)
+                        .child("Messages")
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                conversationList.clear();
+                                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                                    Conversation conversation = objDataSnapshot.getValue(Conversation.class);
+                                    if (conversation != null){
+                                        conversationList.add(conversation);
 
-        databaseReference.child("Conversations")
-                .child(conversationId)
-                .child("Messages")
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                conversationList.clear();
-                //Toast.makeText(ChatingActivity.this, "Nuevo mensaje", Toast.LENGTH_SHORT).show();
-                for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()){
-                    Conversation conversation = objDataSnapshot.getValue(Conversation.class);
-                    conversationList.add(conversation);
-                }
 
-                MessageHelper.orderMessagesList(conversationList);
+                                        if ( !conversation.getSenderId().equals(myUserId) ){
+                                            if (!conversation.isRead()){
+                                                if (conversation.getMessageId() != null){
 
-                messagesRecyclerview.setAdapter(conversationAdapter);
+                                                    databaseReference.child("Conversations")
+                                                            .child(conversationId)
+                                                            .child("Messages").child(conversation.getMessageId()).child("read").setValue(true);
 
-                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount());
+                                                }
+                                            }
+                                        }
 
-                MessageHelper.modifyCreatedAtToFormat(conversationList);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                }
 
-            }
-        });
+                                MessageHelper.orderMessagesList(conversationList);
+
+                                messagesRecyclerview.setAdapter(conversationAdapter);
+
+                                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount());
+
+                                MessageHelper.modifyCreatedAtToFormat(conversationList);
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+        }
     }
-
-
-
-
-
 
 
     /** Select and Upload image */
@@ -361,7 +370,6 @@ public class ChatingActivity extends AppCompatActivity {
             try {
 
                  bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImage);
-
                  StartConversationWithMyContact();
                  uploadImage();
 
@@ -405,7 +413,6 @@ public class ChatingActivity extends AppCompatActivity {
                     Uri downloadUri = task.getResult();
 
                     if (downloadUri != null){
-
                            databaseReference.child("Conversations")
                                             .child(conversationId)
                                             .child("Messages")
@@ -422,34 +429,50 @@ public class ChatingActivity extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
 
     public void updateConversation(String message, String createdAt){
+        Log.d("MESSAGES"," ====> "+message +"  && " + createdAt);
 
-        Toast.makeText(this, "Updating on two users..", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Updating on two users..", Toast.LENGTH_SHORT).show();
 
-
-        HashMap<String, Object> updateConversation = new HashMap<>();
+        final  HashMap<String, Object> updateConversation = new HashMap<>();
         updateConversation.put("previewLastMessage", message);
         updateConversation.put("previewLastChatCreatedAt", createdAt);
 
-        databaseReference.child("User").child(myUserId).child("Conversa tions").child(conversationId)
-                .updateChildren(updateConversation);
-
-        databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId)
-                .updateChildren(updateConversation);
 
 
-        //databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-        //databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+        databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId)
+                .updateChildren(updateConversation).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+               // Toast.makeText(ChatingActivity.this, "Se inserto el mensaje", Toast.LENGTH_SHORT).show();
 
-        //databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastMessage").setValue(message);
-        //databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).child("previewLastChatCreatedAt").setValue(createdAt);
+
+                databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId)
+                        .updateChildren(updateConversation);
+
+
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(ChatingActivity.this, "Algo paso!!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.child("Conversations")
+                .child(conversationId)
+                .child("Messages").removeEventListener(messageListener);
+    }
 }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -127,6 +129,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     /** checking if there is an active conversation with any of the contacts on contactsList*/
     public void CheckIfExistConversationOnContact(final String secondUserId) {
+
         if (secondUserId != null) {
                 databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
                     @Override
@@ -135,11 +138,14 @@ public class ContactsActivity extends AppCompatActivity {
                         for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
                             Chat chat = objDataSnapshot.getValue(Chat.class);
                             if (chat != null) {
+
                                 if (chat.getSecondUserId() != null){
                                     if (chat.getSecondUserId().equals(secondUserId)) {
                                         for (int i = 0; i < contactsList.size(); i++) {
                                             if (contactsList.get(i).getUserId().equals(chat.getSecondUserId())) {
+
                                                 contactsList.get(i).setConversationId(chat.getConversationId());
+                                                //contactsAdapter.notifyDataSetChanged();
                                             }
                                         }
                                     }
@@ -203,7 +209,6 @@ public class ContactsActivity extends AppCompatActivity {
                             contactsList.add(new Contact(username, username, email, userId, profileUrl, description, ""));
                         }
                         if (contactsList.size() == 0){
-                            Toast.makeText(ContactsActivity.this, "O CONt", Toast.LENGTH_SHORT).show();
                             defaultTextNoContact.setVisibility(View.VISIBLE);
                             defaultImageNoContacts.setVisibility(View.VISIBLE);
                         }else {

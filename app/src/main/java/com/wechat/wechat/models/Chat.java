@@ -8,16 +8,18 @@ public class Chat {
     private String urlProfile;
     private String secondUserId;
     private String conversationId;
+    private int countNewMessages;
 
     public Chat(){}
 
-    public Chat(String username, String message, String created_At, String urlProfile, String secondUserId, String conversationId) {
+    public Chat(String username, String message, String created_At, String urlProfile, String secondUserId, String conversationId, int countNewMessages) {
         this.username = username;
         this.message = message;
         this.created_At = created_At;
         this.urlProfile = urlProfile;
         this.secondUserId = secondUserId;
         this.conversationId = conversationId;
+        this.countNewMessages = countNewMessages;
     }
 
     public String getUsername() {
@@ -51,6 +53,7 @@ public class Chat {
     public void setUrlProfile(String urlProfile) {
         this.urlProfile = urlProfile;
     }
+
     public String getSecondUserId() {
         return secondUserId;
     }
@@ -65,5 +68,13 @@ public class Chat {
 
     public void setConversationId(String conversationId) {
         this.conversationId = conversationId;
+    }
+
+    public int getCountNewMessages() {
+        return countNewMessages;
+    }
+
+    public void setCountNewMessages(int countNewMessages) {
+        this.countNewMessages = countNewMessages;
     }
 }

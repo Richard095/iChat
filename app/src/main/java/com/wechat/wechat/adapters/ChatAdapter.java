@@ -50,6 +50,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             url = "https://pngimage.net/wp-content/uploads/2018/05/button-profile-png-8.png";
         }
 
+        if (chat.getCountNewMessages() > 0){
+            viewHolder.countNewMessages.setVisibility(View.VISIBLE);
+            String count = Integer.toString(chat.getCountNewMessages());
+            viewHolder.countNewMessages.setText(count);
+        }else{
+            viewHolder.countNewMessages.setVisibility(View.GONE);
+        }
+
         Picasso.get()
                 .load(url)
                 .resize(70,70)
@@ -77,13 +85,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView imageProfile;
-        private TextView fullname, messagePreviewText, createdAtPreview;
+        private TextView fullname, messagePreviewText, createdAtPreview, countNewMessages;
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageProfile = itemView.findViewById(R.id.img_profile_chat);
             fullname = itemView.findViewById(R.id.tv_fullname_chat);
             messagePreviewText = itemView.findViewById(R.id.tv_message_preview_chat);
             createdAtPreview = itemView.findViewById(R.id.tv_message_preview_createdAt);
+            countNewMessages = itemView.findViewById(R.id.tv_countMessage);
         }
     }
 }

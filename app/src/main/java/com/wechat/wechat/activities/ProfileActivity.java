@@ -36,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
+import com.wechat.wechat.models.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -147,23 +148,18 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            String  myUsername = childDataSnapshot.child("username").getValue().toString();
-                            String  urlProfile = childDataSnapshot.child("urlProfile").getValue().toString();
-                            String  email = childDataSnapshot.child("email").getValue().toString();
-                            String  state = childDataSnapshot.child("description").getValue().toString();
-
-                            usernameProfileText.setText(myUsername);
-                            emailProfileText.setText(email);
-                            profileTextView.setText(state);
-
-                            Picasso.get()
-                                    .load(urlProfile)
-                                    .resize(500,500)
-                                    .centerCrop()
-                                    .placeholder(R.drawable.asset_waiting)
-                                    .into(thumbProfileImage);
-
-
+                            User user = childDataSnapshot.getValue(User.class);
+                            if (user != null){
+                                usernameProfileText.setText(user.getUsername());
+                                emailProfileText.setText(user.getEmail());
+                                profileTextView.setText(user.getDescription());
+                                Picasso.get()
+                                        .load(user.getUrlProfile())
+                                        .resize(500,500)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.asset_waiting)
+                                        .into(thumbProfileImage);
+                            }
                         }
                     }
                     @Override

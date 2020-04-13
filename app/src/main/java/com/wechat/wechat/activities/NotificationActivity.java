@@ -202,8 +202,6 @@ public class NotificationActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
-
                         if (dataSnapshot.getValue() == null){
                             Toast.makeText(NotificationActivity.this, "No hay ningun usuario asociado a este correo", Toast.LENGTH_LONG).show();
                         }else{
@@ -213,15 +211,23 @@ public class NotificationActivity extends AppCompatActivity {
                                 if (someoneId.equals(myUserId)){
                                     Toast.makeText(NotificationActivity.this, "No te puedes enviar invitacion a ti mismo", Toast.LENGTH_LONG).show();
                                 }else{
-                                    for (Invitation listContacts: myContactList){
-                                        if (listContacts.getUserId().equals(someoneId)){
-                                            Toast.makeText(NotificationActivity.this, getString(R.string.contact_existent_message), Toast.LENGTH_LONG).show();
-                                            break;
+
+
+                                    if (!myContactList.isEmpty()){
+                                        for (Invitation listContacts: myContactList){
+                                            if (listContacts.getUserId().equals(someoneId)){
+                                                Toast.makeText(NotificationActivity.this, getString(R.string.contact_existent_message), Toast.LENGTH_LONG).show();
+                                                break;
+                                            }
+                                            if (!listContacts.getUserId().equals(someoneId)){
+                                                sendInvitation(editText, sendInvitation);
+                                            }
                                         }
-                                        if (!listContacts.getUserId().equals(someoneId)){
-                                            sendInvitation(editText, sendInvitation);
-                                        }
+                                    }else{
+                                        sendInvitation(editText, sendInvitation);
                                     }
+
+
                                 }
 
                             }

@@ -4,12 +4,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,10 +38,12 @@ import com.wechat.wechat.helpers.ConverterHelper;
 import com.wechat.wechat.helpers.MessageHelper;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
+import com.wechat.wechat.models.Conversation;
 import com.wechat.wechat.models.Invitation;
 
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     ImageView defaultImage;
     TextView defaultText;
+
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+
     ArrayList<Chat> chatList = new  ArrayList<>();
     String myUserId;
 
@@ -74,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         myUserId  = pref.getString("token", null);
 
         startFirebaseConfiguration();
+
         fetchMyConversations();
         countMyInvitations();
         
@@ -180,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                             //chatList.add(new Chat("username","message","createdAt","urlProfile","secondUserId","conversationId"));
                             chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
                                                    chats.getPreviewLastChatCreatedAt(), urlProfile,
-                                                   chats.getUserIdDOS(), chats.getConversationId()));
+                                                   chats.getUserIdDOS(), chats.getConversationId(),0));
+
                             MessageHelper.modifyCreatedAtToFormatOnChat(chatList);
 
                         }
@@ -193,10 +205,8 @@ public class MainActivity extends AppCompatActivity {
                         defaultImage.setVisibility(View.GONE);
                         defaultText.setVisibility(View.GONE);
                     }
-
-
-
                     chatListRecycler.setAdapter(chatAdapter);
+                    fetchLastMessage();
                 }
 
                 @Override
@@ -232,5 +242,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public  void fetchLastMessage() {
+
+        for (final Chat chat : chatList) {
+            if (chat.getConversationId() != null) {
+
+            databaseReference.child("Conversations")
+                    .child(chat.getConversationId()).child("Messages")
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int count = 0;
+
+                            ArrayList<Conversation> tempArray = new ArrayList<>();
+                            for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
+                                Conversation conversation = objDataSnapshot.getValue(Conversation.class);
+                                if (conversation != null) {
+                                    tempArray.add(conversation);
+                                    if (!conversation.getSenderId().equals(myUserId)){
+                                        if (!conversation.isRead()){
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (tempArray.size() != 0) {
+                                MessageHelper.orderMessagesList(tempArray);
+                                MessageHelper.modifyCreatedAtToFormat(tempArray);
+                                chat.setMessage(tempArray.get(0).getMessage());
+                                chat.setCreated_At(tempArray.get(0).getCreated_At());
+                                chat.setCountNewMessages(count);
+                                chatAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // Handle possible errors.
+                        }
+                    });
+            }
+        }
+    }
+
+
+
+    // Vibrate for 150 milliseconds
+    private  void vibrate() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
+        }
+    }
 
 }

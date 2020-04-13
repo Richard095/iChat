@@ -8,7 +8,6 @@
     tools:context=".activities.MainActivity">
 
 
-
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_activity_toolbar"
@@ -52,7 +51,6 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_contacts_id"
         android:layout_width="match_parent"
@@ -60,6 +58,10 @@
         android:src="@drawable/ic_message_black_24dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="18dp"/>
+        android:layout_margin="18dp"
+        />
+
+
+
 
 </RelativeLayout>

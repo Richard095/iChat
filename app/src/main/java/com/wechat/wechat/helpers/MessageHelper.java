@@ -1,5 +1,10 @@
 package com.wechat.wechat.helpers;
 
+import android.content.Context;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Conversation;
 
@@ -11,7 +16,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.Context.VIBRATOR_SERVICE;
+
 public class MessageHelper {
+
 
     public static void orderMessagesList(ArrayList<Conversation> arraylist) {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -35,7 +43,7 @@ public class MessageHelper {
             try {
                 SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US );
                 Date d  = sd.parse(createdAt);
-                sd = new SimpleDateFormat("h:mm a"); //h:mm a | d MMMM yyyy, hh:mm aa
+                sd = new SimpleDateFormat("h:mm a", Locale.US); //h:mm a | d MMMM yyyy, hh:mm aa
                 String  newFormat  = sd.format(d);
                 messageList.get(i).setCreated_At(newFormat);
 
@@ -53,7 +61,7 @@ public class MessageHelper {
                 try {
                     SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US );
                     Date d  = sd.parse(createdAt);
-                    sd = new SimpleDateFormat("h:mm a"); //h:mm a | d MMMM yyyy, hh:mm aa
+                    sd = new SimpleDateFormat("h:mm a", Locale.US); //h:mm a | d MMMM yyyy, hh:mm aa
                     String  newFormat  = sd.format(d);
                     chatsList.get(i).setCreated_At(newFormat);
 
@@ -64,6 +72,8 @@ public class MessageHelper {
 
         }
     }
+
+
 
 
 

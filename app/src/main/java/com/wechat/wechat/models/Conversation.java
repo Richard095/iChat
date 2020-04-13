@@ -8,8 +8,20 @@ public class Conversation {
     private String conversationId;
     private String senderId;
     private boolean read;
+    private String messageId;
 
     public Conversation(){}
+
+    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId, String senderId, boolean read, String messageId) {
+        this.message = message;
+        this.created_At = created_At;
+        this.urlImage = urlImage;
+        this.messageType = messageType;
+        this.conversationId = conversationId;
+        this.senderId = senderId;
+        this.read = read;
+        this.messageId = messageId;
+    }
 
     public String getMessage() {
         return message;
@@ -67,13 +79,11 @@ public class Conversation {
         this.read = read;
     }
 
-    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId, String senderId, boolean read) {
-        this.message = message;
-        this.created_At = created_At;
-        this.urlImage = urlImage;
-        this.messageType = messageType;
-        this.conversationId = conversationId;
-        this.senderId = senderId;
-        this.read = read;
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 }
