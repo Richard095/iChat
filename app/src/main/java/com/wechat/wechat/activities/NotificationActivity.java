@@ -166,7 +166,7 @@ public class NotificationActivity extends AppCompatActivity {
     /** Send invitation */
     public void sendInvitation(final EditText editText, final Button sendInvitation) {
 
-        Invitation invitation = new Invitation(myUsername, myUserId);
+        Invitation invitation = new Invitation(myUsername, myUserId,"");
         sendInvitation.setText("Enviando...");
         if (someoneId != null) {
             databaseReference.child("User").child(someoneId).child("Invitations").child(myUserId).setValue(invitation)
@@ -295,13 +295,13 @@ public class NotificationActivity extends AppCompatActivity {
     /** Accept invitation */
 
     public void acceptInvitation(final String username, final String newFriendId){
-        Invitation invitation = new Invitation(username,newFriendId);
+        Invitation invitation = new Invitation(username,newFriendId,"");
 
         databaseReference.child("User").child(myUserId).child("Contacts").child(newFriendId).setValue(invitation)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Invitation invitation = new Invitation(myUsername,myUserId);
+                        Invitation invitation = new Invitation(myUsername,myUserId,"");
                         databaseReference.child("User").child(newFriendId).child("Contacts").child(myUserId).setValue(invitation)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override

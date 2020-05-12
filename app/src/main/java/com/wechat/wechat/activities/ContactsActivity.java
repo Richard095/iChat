@@ -44,6 +44,9 @@ public class ContactsActivity extends AppCompatActivity {
     ArrayList<Invitation> tempContactList = new ArrayList<>();
     String  myUserId;
     Toolbar toolbar;
+
+    ValueEventListener contactsListener = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +79,17 @@ public class ContactsActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (contactsListener != null ){
+            databaseReference.child("User")
+                    .child(myUserId)
+                    .child("Contacts")
+                    .removeEventListener(contactsListener);
+        }
+    }
 
     public void bindViews(){
         contactListRecyclerview = findViewById(R.id.contact_list_recyclerview);
@@ -126,47 +140,10 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
 
-
-    /** checking if there is an active conversation with any of the contacts on contactsList*/
-    public void CheckIfExistConversationOnContact(final String secondUserId) {
-
-        if (secondUserId != null) {
-                databaseReference.child("Conversations").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
-                            Chat chat = objDataSnapshot.getValue(Chat.class);
-                            if (chat != null) {
-
-                                if (chat.getSecondUserId() != null){
-                                    if (chat.getSecondUserId().equals(secondUserId)) {
-                                        for (int i = 0; i < contactsList.size(); i++) {
-                                            if (contactsList.get(i).getUserId().equals(chat.getSecondUserId())) {
-
-                                                contactsList.get(i).setConversationId(chat.getConversationId());
-                                                //contactsAdapter.notifyDataSetChanged();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        contactListRecyclerview.setAdapter(contactsAdapter);
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-        }
-    }
-
-
     /** Fetching  list contacts*/
 
     public void fetchMyContacts(){
-        databaseReference.child("User").child(myUserId).child("Contacts")
+       contactsListener =  databaseReference.child("User").child(myUserId).child("Contacts")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -176,10 +153,8 @@ public class ContactsActivity extends AppCompatActivity {
                             Invitation invitation = objDataSnapshot.getValue(Invitation.class);
                             tempContactList.add(invitation);
                         }
-
                         for ( Invitation invitation : tempContactList ){
-                            getDataForEachContact(invitation.getUserId());
-                            CheckIfExistConversationOnContact(invitation.getUserId());
+                            getDataForEachContact(invitation.getUserId(),invitation.getConversationId());
                         }
                     }
                     @Override
@@ -191,8 +166,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     /** Getting data for each contact in my list*/
-
-    public void getDataForEachContact(final String userId) {
+    public void getDataForEachContact(final String userId, final String conversationId) {
         databaseReference.child("User")
                 .orderByChild("userId").equalTo(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -206,7 +180,7 @@ public class ContactsActivity extends AppCompatActivity {
                             String profileUrl = childDataSnapshot.child("urlProfile").getValue().toString();
                             String description = childDataSnapshot.child("description").getValue().toString();
 
-                            contactsList.add(new Contact(username, username, email, userId, profileUrl, description, ""));
+                            contactsList.add(new Contact(username, username, email, userId, profileUrl, description, conversationId));
                         }
                         if (contactsList.size() == 0){
                             defaultTextNoContact.setVisibility(View.VISIBLE);
@@ -216,12 +190,11 @@ public class ContactsActivity extends AppCompatActivity {
                             defaultImageNoContacts.setVisibility(View.GONE);
                         }
 
-                        //contactListRecyclerview.setAdapter(contactsAdapter);
+                        contactListRecyclerview.setAdapter(contactsAdapter);
 
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
     }

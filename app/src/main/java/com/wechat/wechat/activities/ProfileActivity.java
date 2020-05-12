@@ -36,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.wechat.wechat.R;
+import com.wechat.wechat.activities.auth.LoginActivity;
 import com.wechat.wechat.models.User;
 
 import java.io.ByteArrayOutputStream;
@@ -59,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     Bitmap bitmap;
     Uri uriImage;
-
+    Button closeSesion;
     FirebaseStorage storage;
     StorageReference storageReference;
 
@@ -94,6 +95,22 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        closeSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.remove("token");
+                editor.apply();
+
+                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+
+                finish();
+            }
+        });
 
 
         startFirebaseConfigurations();
@@ -110,6 +127,8 @@ public class ProfileActivity extends AppCompatActivity {
         emailProfileText = findViewById(R.id.tv_email_profile);
         imageChangePhoto = findViewById(R.id.iv_chage_photo);
         editState =  findViewById(R.id.iv_edit_profile_state);
+        closeSesion = findViewById(R.id.close_sesion_button);
+
     }
 
     /** Toolbar configuration */
@@ -211,13 +230,13 @@ public class ProfileActivity extends AppCompatActivity {
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ProfileActivity.this, "Imagen subida con exito!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfileActivity.this, "Foto de perfil actualizada!", Toast.LENGTH_SHORT).show();
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ProfileActivity.this, "Error al subir photo!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProfileActivity.this, "Error al subir la foto!", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -290,7 +309,6 @@ public class ProfileActivity extends AppCompatActivity {
         dialogBuilder.show();
 
     }
-
 
 }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">wechat</string>
+    <string name="app_name">iChat</string>
     <string name="login_succes">Usuario registrado con exito!</string>
     <string name="login_failed">Ocurrio un error comprueba tu conexión a internet!</string>
     <string name="email">Email</string>

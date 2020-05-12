@@ -9,10 +9,11 @@ public class Conversation {
     private String senderId;
     private boolean read;
     private String messageId;
+    private String senderImageUrl;
 
     public Conversation(){}
 
-    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId, String senderId, boolean read, String messageId) {
+    public Conversation(String message, String created_At, String urlImage, String messageType, String conversationId, String senderId, boolean read, String messageId, String senderImageUrl) {
         this.message = message;
         this.created_At = created_At;
         this.urlImage = urlImage;
@@ -21,6 +22,7 @@ public class Conversation {
         this.senderId = senderId;
         this.read = read;
         this.messageId = messageId;
+        this.senderImageUrl = senderImageUrl;
     }
 
     public String getMessage() {
@@ -85,5 +87,13 @@ public class Conversation {
 
     public void setMessageId(String messageId) {
         this.messageId = messageId;
+    }
+
+    public String getSenderImageUrl() {
+        return senderImageUrl;
+    }
+
+    public void setSenderImageUrl(String senderImageUrl) {
+        this.senderImageUrl = senderImageUrl;
     }
 }

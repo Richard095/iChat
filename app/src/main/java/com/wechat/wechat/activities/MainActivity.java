@@ -1,5 +1,6 @@
 package com.wechat.wechat.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
@@ -8,8 +9,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
@@ -107,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        isStoragePermissionGranted();
+
 
     }
 
@@ -130,12 +136,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chat_menu, menu);
+
         MenuItem notificationItem = menu.findItem(R.id.action_notification);
-
         notificationItem.setIcon(ConverterHelper.convertLayoutToImage(MainActivity.this,invitationCount,R.drawable.ic_notifications_active_black_24dp));
-
         MenuItem profile = menu.findItem(R.id.action_acount);
-
         notificationItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -187,11 +191,10 @@ public class MainActivity extends AppCompatActivity {
                                 nameContact = chats.getGetUserNameDos();
                                 urlProfile = chats.getProfileUrlDos();
                             }
-
                             //chatList.add(new Chat("username","message","createdAt","urlProfile","secondUserId","conversationId"));
                             chatList.add(new Chat( nameContact, chats.getPreviewLastMessage(),
                                                    chats.getPreviewLastChatCreatedAt(), urlProfile,
-                                                   chats.getUserIdDOS(), chats.getConversationId(),0));
+                                                   chats.getUserIdDOS(), chats.getConversationId(),0,myUserId));
 
                             MessageHelper.modifyCreatedAtToFormatOnChat(chatList);
 
@@ -252,28 +255,31 @@ public class MainActivity extends AppCompatActivity {
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            int count = 0;
-
+                            int countingMessagesNoRead = 0;
                             ArrayList<Conversation> tempArray = new ArrayList<>();
                             for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
                                 Conversation conversation = objDataSnapshot.getValue(Conversation.class);
                                 if (conversation != null) {
                                     tempArray.add(conversation);
                                     if (!conversation.getSenderId().equals(myUserId)){
+
                                         if (!conversation.isRead()){
-                                            count++;
+                                            vibrate();
+                                            countingMessagesNoRead++;
                                         }
                                     }
                                 }
                             }
 
                             if (tempArray.size() != 0) {
+
                                 MessageHelper.orderMessagesList(tempArray);
                                 MessageHelper.modifyCreatedAtToFormat(tempArray);
                                 chat.setMessage(tempArray.get(0).getMessage());
                                 chat.setCreated_At(tempArray.get(0).getCreated_At());
-                                chat.setCountNewMessages(count);
+                                chat.setCountNewMessages(countingMessagesNoRead);
                                 chatAdapter.notifyDataSetChanged();
+
                             }
                         }
 
@@ -296,5 +302,27 @@ public class MainActivity extends AppCompatActivity {
             ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
         }
     }
+
+
+
+        public  boolean isStoragePermissionGranted() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    Log.v("PERMISION","Permission is granted");
+                    return true;
+                } else {
+
+                    Log.v("PERMISION","Permission is revoked");
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    return false;
+                }
+            }
+            else { //permission is automatically granted on sdk<23 upon installation
+                Log.v("PERMISION","Permission is granted");
+                return true;
+            }
+        }
+
 
 }

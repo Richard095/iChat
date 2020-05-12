@@ -9,18 +9,8 @@ public class Chat {
     private String secondUserId;
     private String conversationId;
     private int countNewMessages;
-
+    private String firstUserId;
     public Chat(){}
-
-    public Chat(String username, String message, String created_At, String urlProfile, String secondUserId, String conversationId, int countNewMessages) {
-        this.username = username;
-        this.message = message;
-        this.created_At = created_At;
-        this.urlProfile = urlProfile;
-        this.secondUserId = secondUserId;
-        this.conversationId = conversationId;
-        this.countNewMessages = countNewMessages;
-    }
 
     public String getUsername() {
         return username;
@@ -76,5 +66,24 @@ public class Chat {
 
     public void setCountNewMessages(int countNewMessages) {
         this.countNewMessages = countNewMessages;
+    }
+
+    public String getFirstUserId() {
+        return firstUserId;
+    }
+
+    public void setFirstUserId(String firstUserId) {
+        this.firstUserId = firstUserId;
+    }
+
+    public Chat(String username, String message, String created_At, String urlProfile, String secondUserId, String conversationId, int countNewMessages, String firstUserId) {
+        this.username = username;
+        this.message = message;
+        this.created_At = created_At;
+        this.urlProfile = urlProfile;
+        this.secondUserId = secondUserId;
+        this.conversationId = conversationId;
+        this.countNewMessages = countNewMessages;
+        this.firstUserId = firstUserId;
     }
 }

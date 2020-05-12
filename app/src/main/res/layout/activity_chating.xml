@@ -25,7 +25,8 @@
             android:layout_gravity="center"
             android:text="Ricardo"
             android:textColor="#ffffff"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textSize="18sp"/>
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView

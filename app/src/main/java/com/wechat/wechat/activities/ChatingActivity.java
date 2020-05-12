@@ -1,8 +1,14 @@
 package com.wechat.wechat.activities;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +44,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.wechat.wechat.R;
 import com.wechat.wechat.adapters.ConversationAdapter;
+import com.wechat.wechat.helpers.ImageHelper;
 import com.wechat.wechat.helpers.MessageHelper;
 import com.wechat.wechat.models.Chat;
 import com.wechat.wechat.models.Chats;
@@ -50,6 +57,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
@@ -82,10 +90,11 @@ public class ChatingActivity extends AppCompatActivity {
 
     Bitmap bitmap;
     Uri uriImage;
-
+    String urlImageReceived, senderImageUrl;
 
     ValueEventListener messageListener=null;
 
+    ArrayList<Conversation> tempArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,16 +111,29 @@ public class ChatingActivity extends AppCompatActivity {
 
         toolbarTitle.setText(contactUsername);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         myUserId  = pref.getString("token", null);
 
         startButtonEvents();
 
         toolbarConfigurations();
-
         startFirebaseConfigurations();
-
         getMessages();
+
+        conversationAdapter.setOnConversationClickListener(new ConversationAdapter.OnConversationClickListener() {
+            @Override
+            public void onOpenImageClickListener(Conversation conversation) {
+                Intent intent = new Intent(ChatingActivity.this, ImageActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra("urlImage", conversation.getUrlImage());
+                startActivity(intent);
+            }
+
+        });
 
     }
 
@@ -133,10 +155,7 @@ public class ChatingActivity extends AppCompatActivity {
         conversationId = getIntent().getStringExtra("conversationId");
         contactUrlProfile = getIntent().getStringExtra("contactUrlProfile");
 
-        Log.d("EXTRAS", contactUserId+ " MyContactUserId"  );
-        Log.d("EXTRAS", contactUsername+" MyContactUserName" );
-        Log.d("EXTRAS", conversationId+"   << === conversationId "  );
-        Log.d("EXTRAS", contactUrlProfile+" URLPROFILE" );
+        //Toast.makeText(this,conversationId , Toast.LENGTH_SHORT).show();
     }
 
 
@@ -151,7 +170,6 @@ public class ChatingActivity extends AppCompatActivity {
                 }
             }
         });
-
 
         imageSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,8 +214,11 @@ public class ChatingActivity extends AppCompatActivity {
 
         if (conversationId.equals("")){
             conversationId =  UUID.randomUUID().toString();
-            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt, contactUserId, conversationId);
-            getMessages();
+
+            saveConversation(contactUsername,"Mensaje provicinal :(", createdAt, contactUserId, conversationId);getMessages();
+            databaseReference.child("User").child(myUserId).child("Contacts").child(contactUserId).child("conversationId").setValue(conversationId);
+            databaseReference.child("User").child(contactUserId).child("Contacts").child(myUserId).child("conversationId").setValue(conversationId);
+
         }else{
             sendMessage(conversationId);
         }
@@ -206,7 +227,7 @@ public class ChatingActivity extends AppCompatActivity {
     }
 
     public void saveConversation(final String username, final String message, final String createdAt,  final String secondUserId, final String conversationId){
-        Chat chat = new Chat(username,message,createdAt,"", secondUserId, conversationId, 0);
+        Chat chat = new Chat(username,message,createdAt,"", secondUserId, conversationId, 0,myUserId);
         databaseReference.child("Conversations").child(conversationId).setValue(chat)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -231,13 +252,9 @@ public class ChatingActivity extends AppCompatActivity {
                         if (user != null) {
                             if (myUserId != null){
                                 if (myUserId.equals(user.getUserId())){
-
                                     Chats chats = new Chats( tempMessage, createdAt, conversationId, myUserId, contactUserId, user.getFullname(), contactUsername, user.getUrlProfile(), contactUrlProfile);
-
                                     databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId).setValue(chats);
-
                                     databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId).setValue(chats);
-
                                 }
                             }
                         }
@@ -263,44 +280,21 @@ public class ChatingActivity extends AppCompatActivity {
 
         if (typeMessage.equals("TEXT")){
             String uniqueID = UUID.randomUUID().toString();
-            Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false, uniqueID);
+            Conversation conversation = new Conversation(message, createdAt, "NO_image",typeMessage,conversationId, myUserId, false, uniqueID,"NO_IMAGE");
 
-            databaseReference.child("Conversations")
-                    .child(conversationId)
-                    .child("Messages")
-                    .child(uniqueID)
-                    .setValue(conversation).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    updateConversation(message, createdAt);
-                }
-            });
-
+            databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
 
         }else if(typeMessage.equals("IMAGE")){
             String uniqueID = UUID.randomUUID().toString();
-            Conversation conversation = new Conversation(typingInput.getText().toString(), createdAt, uriImage.toString(),typeMessage,conversationId, myUserId, false,uniqueID);
-
+            Conversation conversation = new Conversation(typingInput.getText().toString(), createdAt, "NO_READY",typeMessage,conversationId, myUserId, false,uniqueID, senderImageUrl);
             imageUniqueId = uniqueID;
-
-            databaseReference
-                    .child("Conversations")
-                    .child(conversationId)
-                    .child("Messages")
-                    .child(uniqueID)
-                    .setValue(conversation).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    updateConversation(message, createdAt);
-                }
-            });
-
+            databaseReference.child("Conversations").child(conversationId).child("Messages").child(uniqueID).setValue(conversation);
         }
 
     }
 
 
-    /** Getting all messages from chat ==================>*/
+    /** Getting all messages from chat */
 
     public void getMessages() {
         if (conversationId != null) {
@@ -311,46 +305,51 @@ public class ChatingActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 conversationList.clear();
+
                                 for (DataSnapshot objDataSnapshot : dataSnapshot.getChildren()) {
                                     Conversation conversation = objDataSnapshot.getValue(Conversation.class);
                                     if (conversation != null){
                                         conversationList.add(conversation);
-
-
                                         if ( !conversation.getSenderId().equals(myUserId) ){
                                             if (!conversation.isRead()){
                                                 if (conversation.getMessageId() != null){
-
-                                                    databaseReference.child("Conversations")
-                                                            .child(conversationId)
-                                                            .child("Messages").child(conversation.getMessageId()).child("read").setValue(true);
-
+                                                    databaseReference.child("Conversations").child(conversationId).child("Messages").child(conversation.getMessageId()).child("read").setValue(true);
                                                 }
                                             }
                                         }
 
+                                        /** Processing image :::::::::::::::::
+                                        if (!conversation.getSenderId().equals(myUserId)){
+                                            if (conversation.getMessageType().equals("IMAGE")){
+                                                if (conversation.getUrlImage().startsWith("https://")){
+                                                    fetchImageOnBackgroundProcess(conversation.getUrlImage(),conversation.getConversationId(),conversation.getMessageId());
+                                                }
+                                            }
+                                        }
+                                        ::::::::::::::::::::::::::::::::::::::::::::*/
+
                                     }
                                 }
 
+
+
                                 MessageHelper.orderMessagesList(conversationList);
-
                                 messagesRecyclerview.setAdapter(conversationAdapter);
-
-                                messagesRecyclerview.scrollToPosition(messagesRecyclerview.getAdapter().getItemCount());
-
                                 MessageHelper.modifyCreatedAtToFormat(conversationList);
+                                messagesRecyclerview.smoothScrollToPosition(-2);
+
+
 
 
                             }
 
                             @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
 
-                            }
                         });
+
         }
     }
-
 
     /** Select and Upload image */
 
@@ -362,17 +361,25 @@ public class ChatingActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             uriImage  = data.getData();
             try {
-
                  bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImage);
+
+                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                 Bitmap bitmapPreparedSaved = bitmap;
+                 bitmapPreparedSaved.compress(Bitmap.CompressFormat.JPEG,30,stream);
+                 byte[] byteArray = stream.toByteArray();
+                 Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+
+                 senderImageUrl = ImageHelper.saveImage(compressedBitmap, ChatingActivity.this);
+                 urlImageReceived = senderImageUrl;
                  StartConversationWithMyContact();
                  uploadImage();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -382,97 +389,75 @@ public class ChatingActivity extends AppCompatActivity {
 
     public void uploadImage(){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
         byte[] data = baos.toByteArray();
-        String imageId = UUID.randomUUID().toString();
+        final String imageId = UUID.randomUUID().toString();
+
         StorageReference reference = storageReference.child("messageImages/"+ imageId);
-        UploadTask uploadTask = reference.putBytes(data);
+        final  UploadTask uploadTask = reference.putBytes(data);
 
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ChatingActivity.this, "Imagen subida con exito!", Toast.LENGTH_SHORT).show();
-            }
-        });
+                Toast.makeText(ChatingActivity.this, "Has enviado una imagen", Toast.LENGTH_SHORT).show();
 
-        final StorageReference ref = storageReference.child("messageImages/"+ imageId);
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-
-                if (!task.isSuccessful()) {
-
-                    throw task.getException();
-                }
-                return ref.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-
-                    if (downloadUri != null){
-                           databaseReference.child("Conversations")
-                                            .child(conversationId)
-                                            .child("Messages")
-                                            .child(imageUniqueId)
-                                            .child("urlImage")
-                                            .setValue(downloadUri.toString());
-
-                        imageUniqueId ="";
-                    }
-
-                } else {
-                    Toast.makeText(ChatingActivity.this, "Hubo un problema con la descarga.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
-
-
-    public void updateConversation(String message, String createdAt){
-        Log.d("MESSAGES"," ====> "+message +"  && " + createdAt);
-
-        //Toast.makeText(this, "Updating on two users..", Toast.LENGTH_SHORT).show();
-
-        final  HashMap<String, Object> updateConversation = new HashMap<>();
-        updateConversation.put("previewLastMessage", message);
-        updateConversation.put("previewLastChatCreatedAt", createdAt);
-
-
-
-        databaseReference.child("User").child(myUserId).child("Conversations").child(conversationId)
-                .updateChildren(updateConversation).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-               // Toast.makeText(ChatingActivity.this, "Se inserto el mensaje", Toast.LENGTH_SHORT).show();
-
-
-                databaseReference.child("User").child(contactUserId).child("Conversations").child(conversationId)
-                        .updateChildren(updateConversation);
-
-
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
+                final StorageReference ref = storageReference.child("messageImages/"+ imageId);
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ChatingActivity.this, "Algo paso!!", Toast.LENGTH_SHORT).show();
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            if (task.getException() != null ) throw task.getException();
+                        }
+                        return ref.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            if (downloadUri != null){
+                                databaseReference.child("Conversations").child(conversationId).child("Messages").child(imageUniqueId).child("urlImage").setValue(downloadUri.toString());
+                                //Toast.makeText(ChatingActivity.this, "Updated ", Toast.LENGTH_SHORT).show();
+                                imageUniqueId ="";
+                            }
+                        } else {
+                            Toast.makeText(ChatingActivity.this, "Hubo un problema con la descarga.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
-
-
-
+            }
+        });
     }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        databaseReference.child("Conversations")
-                .child(conversationId)
-                .child("Messages").removeEventListener(messageListener);
+        if (messageListener != null)
+            databaseReference.child("Conversations").child(conversationId).child("Messages").removeEventListener(messageListener);
     }
+
+
+    public void fetchImageOnBackgroundProcess(final String urlImage,final  String conversationId,final  String messageId){
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = ImageHelper.getBitmapFromURL(urlImage);
+                if (bitmap != null) {
+                    String newImageUrl = ImageHelper.saveImage(bitmap, ChatingActivity.this);
+                    databaseReference.child("Conversations")
+                            .child(conversationId)
+                            .child("Messages")
+                            .child(messageId)
+                            .child("urlImage").setValue(newImageUrl);
+                }
+            }
+        });
+
+
+
+    }
+
 }

@@ -147,4 +147,19 @@
         android:layout_below="@+id/ll_container_profile"/>
 
 
+    <Button
+        android:layout_alignParentBottom="true"
+        android:id="@+id/close_sesion_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cerrar sesión"
+        android:background="@drawable/login_button_normal"
+        android:textColor="#ffffff"
+        android:layout_margin="10dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        style="?android:attr/borderlessButtonStyle"
+        android:stateListAnimator="@null"/>
+
 </RelativeLayout>

@@ -4,7 +4,10 @@
     package="com.wechat.wechat">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".helpers.FirebaseHelper"
         android:allowBackup="true"
@@ -14,15 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".activities.ProfileActivity"/>
+        <activity android:name=".activities.ImageActivity"></activity>
+        <activity android:name=".activities.ProfileActivity" />
         <activity
             android:name=".activities.auth.RegisterActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar.Bridge"
-            android:windowSoftInputMode="adjustResize"/>
-
-        <activity
-            android:name=".activities.NotificationActivity"/>
-
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".activities.NotificationActivity" />
         <activity
             android:name=".activities.ChatingActivity"
             android:windowSoftInputMode="adjustResize" />
